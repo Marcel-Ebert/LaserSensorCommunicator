@@ -4,4 +4,5 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_main">Home</string>
     <string name="title_activity_usb">USB Serial Reader</string>
+    <string name="title_activity_location">LocationActivity</string>
 </resources>

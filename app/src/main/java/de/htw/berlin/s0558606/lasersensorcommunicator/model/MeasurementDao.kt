@@ -18,8 +18,8 @@ interface MeasurementDao {
     @Query("SELECT * FROM measurement where id = :id")
     fun findMeasurementById(id: Long): Measurement
 
-    @Query("SELECT * FROM measurement where id = :id")
-    fun findMeasurementsByLocationID(id:Long): LiveData<List<Measurement>>
+    @Query("SELECT * FROM measurement where location_id = :id")
+    fun findMeasurementsByLocationID(id: Long): LiveData<List<Measurement>>
 
     @Insert(onConflict = REPLACE)
     fun insertMeasurement(measurement: Measurement)

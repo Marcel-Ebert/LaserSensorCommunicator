@@ -11,7 +11,6 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
@@ -23,10 +22,7 @@ import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
 
-const val ARG_ITEM_ID = "location_id"
-const val ARG_ITEM_NAME = "location_name"
-
-class UsbActivity : AppCompatActivity(), AnkoLogger {
+class SensorActivity : AppCompatActivity(), AnkoLogger {
 
     private val mUsbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -144,6 +140,17 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            stopService(mService)
+            unbindService(usbConnection)
+            unregisterReceiver(mUsbReceiver)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun addNewSensorData(data: SensorData) {
         if (data.initializedCorrectly) {
             data.measurementID = measurementID
@@ -181,8 +188,8 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
      */
-    private class MyHandler(activity: UsbActivity) : Handler(), AnkoLogger {
-        private val mActivity: UsbActivity = activity
+    private class MyHandler(activity: SensorActivity) : Handler(), AnkoLogger {
+        private val mActivity: SensorActivity = activity
 
         override fun handleMessage(msg: Message) {
             when (msg.what) {

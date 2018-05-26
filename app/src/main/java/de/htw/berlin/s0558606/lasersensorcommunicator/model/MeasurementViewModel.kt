@@ -22,4 +22,8 @@ class MeasurementViewModel(application: Application) : AndroidViewModel(applicat
         return mRepository.getMeasurementID(id)
     }
 
+    fun getMeasurementsByLocationID(id: Long): LiveData<List<Measurement>> {
+        return mRepository.getMeasurementsByLocationID(id)
+    }
+
 }

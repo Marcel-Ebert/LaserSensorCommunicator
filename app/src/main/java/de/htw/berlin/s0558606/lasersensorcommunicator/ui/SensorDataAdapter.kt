@@ -1,13 +1,9 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 
-import android.content.Intent
-import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
-import de.htw.berlin.s0558606.lasersensorcommunicator.MapsActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.R
-import de.htw.berlin.s0558606.lasersensorcommunicator.UsbActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.sensor_list_item.*
@@ -25,7 +21,7 @@ class SensorDataAdapter() : RecyclerView.Adapter<SensorDataAdapter.SensorDataVie
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as SensorData
         warn { "Clicked on SensorData: $item" }
-//        startActivity(view.context, Intent(view.context, UsbActivity::class.java), null)
+//        startActivity(view.context, Intent(view.context, SensorActivity::class.java), null)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): SensorDataViewHolder {

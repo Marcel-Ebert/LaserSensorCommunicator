@@ -2,6 +2,7 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 
 import android.arch.persistence.room.*
 import com.google.android.gms.maps.model.LatLng
+import java.text.SimpleDateFormat
 import java.util.*
 
 /**
@@ -28,10 +29,16 @@ data class Measurement(
         var end: Date = Date(),
 
         @ColumnInfo(name = "location_id")
-        var locationID: Long = 0) {
+        var locationID: Long) {
 
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 
+    fun getStartAsString(): String {
+        return SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(start)
+    }
+    fun getEndAsString(): String {
+        return SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(end)
+    }
 }

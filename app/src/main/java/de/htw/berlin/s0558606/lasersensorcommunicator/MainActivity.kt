@@ -13,6 +13,10 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.warn
 
+
+const val ARG_ITEM_ID = "item_id"
+const val ARG_ITEM_NAME = "item_name"
+
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private lateinit var mLocationViewModel: LocationViewModel

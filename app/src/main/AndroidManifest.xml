@@ -4,8 +4,9 @@
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
-    <uses-feature android:name="android.hardware.usb.host"
-        android:required="true"/>
+    <uses-feature
+        android:name="android.hardware.usb.host"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -14,7 +15,6 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MaterialTheme">
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
@@ -31,13 +31,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".UsbActivity"
-            android:label="@string/title_activity_usb"></activity>
+        <activity
+            android:name=".SensorActivity"
+            android:label="@string/title_activity_usb" />
 
         <service
             android:name=".serial.UsbService"
-            android:enabled="true">
-        </service>
+            android:enabled="true"></service>
+
+        <activity
+            android:name=".LocationActivity"
+            android:label="@string/title_activity_location"
+            android:theme="@style/MaterialTheme"></activity>
     </application>
 
 </manifest>
