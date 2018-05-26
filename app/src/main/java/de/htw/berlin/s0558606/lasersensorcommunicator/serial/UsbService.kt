@@ -39,7 +39,6 @@ class UsbService : Service() {
      *  be treated there.
      */
     private val mCallback = UsbSerialInterface.UsbReadCallback { arg0 ->
-        //String data = new String(arg0, "UTF-8");
         if (mHandler != null)
             mHandler!!.obtainMessage(MESSAGE_FROM_SERIAL_PORT, arg0).sendToTarget()
     }
@@ -105,6 +104,7 @@ class UsbService : Service() {
      * incoming Intents (USB ATTACHED, USB DETACHED...) and it tries to open a serial port.
      */
     override fun onCreate() {
+        this.context = this
         serialPortConnected = false
         UsbService.SERVICE_CONNECTED = true
         setFilter()

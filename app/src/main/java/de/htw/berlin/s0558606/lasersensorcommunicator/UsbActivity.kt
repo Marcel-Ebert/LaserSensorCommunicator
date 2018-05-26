@@ -12,6 +12,7 @@ import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.SensorDataAdapter
 import kotlinx.android.synthetic.main.content_main.*
+import kotlinx.android.synthetic.main.content_usb.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
@@ -60,13 +61,13 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
 
 
         mHandler = MyHandler(this)
-
-        rv_sensor_items.setHasFixedSize(true)
-        rv_sensor_items.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rv_sensor_items.adapter = SensorDataAdapter(sensorDataList)
-
-        addItemsToList(3)
-        rv_sensor_items.adapter.notifyDataSetChanged()
+//
+//        rv_sensor_items.setHasFixedSize(true)
+//        rv_sensor_items.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+//        rv_sensor_items.adapter = SensorDataAdapter(sensorDataList)
+//
+//        addItemsToList(3)
+//        rv_sensor_items.adapter.notifyDataSetChanged()
     }
 
     private fun addItemsToList(amount: Int) {
@@ -118,25 +119,26 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
      */
-    private class MyHandler(activity: AppCompatActivity) : Handler(), AnkoLogger {
-        private val mActivity: WeakReference<AppCompatActivity> = WeakReference(activity)
+    private class MyHandler(activity: UsbActivity) : Handler(), AnkoLogger {
+        private val mActivity: WeakReference<UsbActivity> = WeakReference(activity)
 
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 UsbService.MESSAGE_FROM_SERIAL_PORT ->
-                    //                    mActivity.get().display.append(data);
-                    error { bytesToHex(msg.obj as ByteArray)}
-                UsbService.CTS_CHANGE -> Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show()
-                UsbService.DSR_CHANGE -> Toast.makeText(mActivity.get(), "DSR_CHANGE", Toast.LENGTH_LONG).show()
+                    mActivity.get()?.textView2?.text = bytesToHex(msg.obj as ByteArray)
+                UsbService.CTS_CHANGE ->
+                    Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show()
+                UsbService.DSR_CHANGE ->
+                    Toast.makeText(mActivity.get(), "DSR_CHANGE", Toast.LENGTH_LONG).show()
+
             }
         }
 
         fun bytesToHex(bytes: ByteArray): String {
-            var string: String = ""
+            var string = ""
             for (b in bytes) {
                 val st = String.format("%02X", b)
-                string.plus(st)
-                print(st)
+                string = string.plus(st)
             }
             return string
         }
