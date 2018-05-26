@@ -3,7 +3,6 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
-import io.satoshipay.experiments.satoshipaywallet.database.LocationDataBase
 
 class LocationRepository
 /**

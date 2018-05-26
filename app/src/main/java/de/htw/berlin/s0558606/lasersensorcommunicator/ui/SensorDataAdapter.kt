@@ -18,7 +18,9 @@ import org.jetbrains.anko.warn
 /**
  * Created by Marcel Ebert S0558606 on 20.05.18.
  */
-class SensorDataAdapter(var dataList: List<SensorData>) : RecyclerView.Adapter<SensorDataAdapter.SensorDataViewHolder>(), AnkoLogger {
+class SensorDataAdapter() : RecyclerView.Adapter<SensorDataAdapter.SensorDataViewHolder>(), AnkoLogger {
+
+    var dataList: List<SensorData> = listOf()
 
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as SensorData

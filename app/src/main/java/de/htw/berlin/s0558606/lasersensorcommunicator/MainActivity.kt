@@ -22,8 +22,9 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        setSupportActionBar(findViewById(R.id.toolbar))
 
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar?.title = getString(R.string.title_activity_main)
 
 
         locationAdapter = LocationAdapter()

@@ -6,6 +6,8 @@ import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
+import de.htw.berlin.s0558606.lasersensorcommunicator.ARG_ITEM_ID
+import de.htw.berlin.s0558606.lasersensorcommunicator.ARG_ITEM_NAME
 import de.htw.berlin.s0558606.lasersensorcommunicator.R
 import de.htw.berlin.s0558606.lasersensorcommunicator.UsbActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
@@ -25,8 +27,11 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as Location
         warn { "Clicked on Location: $item" }
-//        startActivity<PlanetDetailActivity>(ARG_ITEM_ID to item.id)
-        startActivity(view.context, Intent(view.context, UsbActivity::class.java), null)
+
+        val intent = Intent(view.context, UsbActivity::class.java)
+        intent.putExtra(ARG_ITEM_ID, item.id)
+        intent.putExtra(ARG_ITEM_NAME, item.name)
+        startActivity(view.context, intent, null)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): LocationViewHolder {

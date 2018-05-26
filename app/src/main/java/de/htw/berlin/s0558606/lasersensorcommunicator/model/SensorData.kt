@@ -19,17 +19,15 @@ import java.util.*
 @TypeConverters(DateConverter::class)
 data class SensorData(val pm25: String,
                       val pm10: String,
-                      val locationX: String,
-                      val locationY: String) {
+
+                      @ColumnInfo(name = "location_id")
+                      val locationID: Long) {
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 
     @ColumnInfo(name = "timestamp")
     var timestamp: Date = Date()
-
-    @ColumnInfo(name = "location_id")
-    var locationID: Long = 0
 
     fun getDateAsString(): String {
         return SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(timestamp)

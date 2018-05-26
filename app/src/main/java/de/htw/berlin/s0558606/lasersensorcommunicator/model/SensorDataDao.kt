@@ -1,5 +1,6 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.model
 
+import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 import io.reactivex.Flowable
@@ -12,10 +13,14 @@ import io.reactivex.Flowable
 interface SensorDataDao {
 
     @Query("SELECT * FROM sensordata")
-    fun getAllData(): Flowable<List<SensorData>>
+    fun getAllData(): LiveData<List<SensorData>>
 
     @Query("SELECT * FROM sensordata where id = :id")
     fun findDataById(id: Long): SensorData
+
+
+    @Query("SELECT * FROM sensordata where location_id = :id")
+    fun findDataByLocationId(id: Long): LiveData<List<SensorData>>
 
     @Insert(onConflict = REPLACE)
     fun insertData(data: SensorData)

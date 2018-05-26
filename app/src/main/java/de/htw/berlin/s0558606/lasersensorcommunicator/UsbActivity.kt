@@ -1,21 +1,32 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator
 
-import android.app.ProgressDialog.show
+import android.arch.lifecycle.Observer
+import android.arch.lifecycle.ViewModelProviders
 import android.content.*
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
+import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.LinearLayoutManager
+import android.widget.ImageView
 import android.widget.Toast
-import de.htw.berlin.s0558606.lasersensorcommunicator.R.id.textView2
+import com.google.android.gms.maps.model.LatLng
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
+import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
+import de.htw.berlin.s0558606.lasersensorcommunicator.ui.SensorDataAdapter
 import kotlinx.android.synthetic.main.content_usb.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
-import java.lang.ref.WeakReference
+
+const val ARG_ITEM_ID = "location_id"
+const val ARG_ITEM_NAME = "location_name"
 
 class UsbActivity : AppCompatActivity(), AnkoLogger {
 
@@ -50,31 +61,55 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
 
     private var usbService: UsbService? = null
     private lateinit var mHandler: MyHandler
-    private val sensorDataList: MutableList<SensorData> = mutableListOf(SensorData("0", "2", "2.0", "3.0"))
 
+
+    private lateinit var mSensorDataViewModel: SensorDataViewModel
+    private lateinit var dataAdapter: SensorDataAdapter
+
+    private var locationID: Long = 0
+    private var locationName: String = "Location"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usb)
 
-
         mHandler = MyHandler(this)
-//
-//        rv_sensor_items.setHasFixedSize(true)
-//        rv_sensor_items.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-//        rv_sensor_items.adapter = SensorDataAdapter(sensorDataList)
-//
-//        addItemsToList(3)
-//        rv_sensor_items.adapter.notifyDataSetChanged()
+
+        if (savedInstanceState == null) {
+            locationID = intent.extras.getLong(ARG_ITEM_ID)
+            locationName = intent.extras.getString(ARG_ITEM_NAME)
+            warn { "LocationID = ${locationID}" }
+
+            dataAdapter = SensorDataAdapter()
+            rv_sensor_items.adapter = dataAdapter
+
+            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
+            mSensorDataViewModel.getDataByLocationID(locationID)?.observe(this, Observer<List<SensorData>> { data ->
+                // Update the cached copy of the words in the adapter.
+                data?.run {
+                    dataAdapter.dataList = data
+                    dataAdapter.notifyDataSetChanged()
+                    warn { "onchanged called" }
+                }
+            })
+
+
+            setSupportActionBar(findViewById(R.id.toolbar))
+            supportActionBar?.title = locationName
+
+
+            rv_sensor_items.setHasFixedSize(true)
+            rv_sensor_items.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+            addNewSensorData("0", "10")
+        }
     }
 
-    private fun addItemsToList(amount: Int) {
+    private fun addNewSensorData(pm25: String, pm10: String) {
         warn { "Function called" }
-        sensorDataList.add(SensorData("1", "2", "2.0", "3.0"))
-        sensorDataList.add(SensorData("0", "2", "2.0", "3.0"))
-        sensorDataList.add(SensorData("0", "2", "2.0", "3.0"))
-
+        mSensorDataViewModel.insert(SensorData(pm25, pm10, locationID))
     }
+
 
     override fun onResume() {
         super.onResume()
