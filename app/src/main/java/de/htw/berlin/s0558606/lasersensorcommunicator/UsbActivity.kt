@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
@@ -21,7 +22,6 @@ import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
-import kotlin.coroutines.experimental.EmptyCoroutineContext.plus
 
 const val ARG_ITEM_ID = "location_id"
 const val ARG_ITEM_NAME = "location_name"
@@ -61,11 +61,10 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
 
 
     private lateinit var mSensorDataViewModel: SensorDataViewModel
-    private lateinit var mLocationViewModel: LocationViewModel
+    private lateinit var mMeasurementViewModel: MeasurementViewModel
     private lateinit var dataAdapter: SensorDataAdapter
 
-    private var locationID: Long = 0
-    private var locationName: String = "Location"
+    private var measurementID: Long = 0
 
     private lateinit var mService: Intent
 
@@ -107,27 +106,26 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
             averagePM25 /= list.size
             averagePM10 /= list.size
 
-            var location = mLocationViewModel.findLocationById(locationID)
-            location.start = start!!
-            location.end = end!!
-            location.pm10 = averagePM10.toString()
-            location.pm25 = averagePM25.toString()
-            mLocationViewModel.insert(location)
+            var measurement = mMeasurementViewModel.getMeasurementByID(measurementID)
+            measurement.start = start!!
+            measurement.end = end!!
+            measurement.pm10 = averagePM10.toString()
+            measurement.pm25 = averagePM25.toString()
+            mMeasurementViewModel.insert(measurement)
 
         }
 
         if (savedInstanceState == null) {
-            locationID = intent.extras.getLong(ARG_ITEM_ID)
-            locationName = intent.extras.getString(ARG_ITEM_NAME)
-            warn { "LocationID = ${locationID}" }
+            measurementID = intent.extras.getLong(ARG_ITEM_ID)
+            warn { "LocationID = ${measurementID}" }
 
             dataAdapter = SensorDataAdapter()
             rv_sensor_items.adapter = dataAdapter
 
-            mLocationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+            mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
 
             mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
-            mSensorDataViewModel.getDataByLocationID(locationID)?.observe(this, Observer<List<SensorData>> { data ->
+            mSensorDataViewModel.getDataByMeasurementID(measurementID)?.observe(this, Observer<List<SensorData>> { data ->
                 // Update the cached copy of the words in the adapter.
                 data?.run {
                     dataAdapter.dataList = data
@@ -137,7 +135,7 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
 
 
             setSupportActionBar(findViewById(R.id.toolbar))
-            supportActionBar?.title = locationName
+            supportActionBar?.title = "Measurement #${measurementID}"
 
 
             rv_sensor_items.setHasFixedSize(true)
@@ -148,7 +146,7 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
 
     private fun addNewSensorData(data: SensorData) {
         if (data.initializedCorrectly) {
-            data.locationID = locationID
+            data.measurementID = measurementID
             mSensorDataViewModel.insert(data)
         }
     }

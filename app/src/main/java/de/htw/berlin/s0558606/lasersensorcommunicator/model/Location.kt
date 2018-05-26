@@ -15,19 +15,7 @@ data class Location(
         var name: String,
 
         @ColumnInfo(name = "location")
-        var location: LatLng,
-
-        @ColumnInfo(name = "pm25")
-        var pm25: String = "0",
-
-        @ColumnInfo(name = "pm10")
-        var pm10: String = "0",
-
-        @ColumnInfo(name = "start")
-        var start: Date = Date(),
-
-        @ColumnInfo(name = "end")
-        var end: Date = Date()) {
+        var location: LatLng) {
 
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)

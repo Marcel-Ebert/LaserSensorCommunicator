@@ -15,14 +15,14 @@ import java.util.*
 @Entity(tableName = "sensordata", foreignKeys = [
     (ForeignKey(entity = Location::class,
             parentColumns = arrayOf("id"),
-            childColumns = arrayOf("location_id"),
+            childColumns = arrayOf("measurement_id"),
             onDelete = CASCADE))])
 @TypeConverters(DateConverter::class)
 data class SensorData(var pm25: String = "",
                       var pm10: String = "",
 
-                      @ColumnInfo(name = "location_id")
-                      var locationID: Long = 0) {
+                      @ColumnInfo(name = "measurement_id")
+                      var measurementID: Long = 0) {
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0

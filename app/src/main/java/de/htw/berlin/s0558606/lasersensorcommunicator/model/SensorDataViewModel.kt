@@ -18,8 +18,8 @@ class SensorDataViewModel(application: Application) : AndroidViewModel(applicati
         mRepository.insert(data)
     }
 
-    fun getDataByLocationID(id: Long): LiveData<List<SensorData>> {
-        return mRepository.getDataByLocationID(id)
+    fun getDataByMeasurementID(id: Long): LiveData<List<SensorData>> {
+        return mRepository.getDataByMeasurementID(id)
     }
 
 }

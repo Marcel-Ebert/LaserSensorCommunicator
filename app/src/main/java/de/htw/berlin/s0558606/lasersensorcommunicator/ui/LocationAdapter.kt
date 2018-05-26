@@ -12,6 +12,7 @@ import de.htw.berlin.s0558606.lasersensorcommunicator.UsbActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.location_list_item.*
+import kotlinx.android.synthetic.main.measurement_list_item.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.warn
 
@@ -42,10 +43,7 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
         val data = dataList.get(position)
         holder.tv_name.text = "${data.name}"
-        holder.tv_pm25.text = "${data.pm25}"
-        holder.tv_pm10.text = "${data.pm10}"
-        holder.tv_starttime.text = "${data.start}"
-        holder.tv_endtime.text = "${data.end}"
+        holder.tv_location.text = "${data.location}"
 
         // can be retrieved from click listener
         holder.itemView.tag = data

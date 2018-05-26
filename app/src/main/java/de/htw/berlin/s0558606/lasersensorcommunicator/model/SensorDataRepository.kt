@@ -24,8 +24,8 @@ internal constructor(application: Application) {
         insertAsyncTask(sensorDataDao!!).execute(item)
     }
 
-    fun getDataByLocationID(id: Long): LiveData<List<SensorData>> {
-        return sensorDataDao?.findDataByLocationId(id)!!
+    fun getDataByMeasurementID(id: Long): LiveData<List<SensorData>> {
+        return sensorDataDao?.findDataByMeasurementId(id)!!
     }
 
     private class insertAsyncTask internal constructor(private val mAsyncTaskDao: SensorDataDao) : AsyncTask<SensorData, Void, Void>() {
