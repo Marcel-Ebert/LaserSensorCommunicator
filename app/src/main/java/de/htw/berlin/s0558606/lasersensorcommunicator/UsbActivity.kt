@@ -1,23 +1,21 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator
 
+import android.app.ProgressDialog.show
 import android.content.*
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
-import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import de.htw.berlin.s0558606.lasersensorcommunicator.R.id.textView2
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
-import de.htw.berlin.s0558606.lasersensorcommunicator.ui.SensorDataAdapter
-import kotlinx.android.synthetic.main.content_main.*
 import kotlinx.android.synthetic.main.content_usb.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
 import java.lang.ref.WeakReference
-import kotlin.experimental.and
 
 class UsbActivity : AppCompatActivity(), AnkoLogger {
 
@@ -120,16 +118,16 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
      */
     private class MyHandler(activity: UsbActivity) : Handler(), AnkoLogger {
-        private val mActivity: WeakReference<UsbActivity> = WeakReference(activity)
+        private val mActivity: UsbActivity = activity
 
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 UsbService.MESSAGE_FROM_SERIAL_PORT ->
-                    mActivity.get()?.textView2?.text = bytesToHex(msg.obj as ByteArray)
+                    mActivity.textView2?.text = bytesToHex(msg.obj as ByteArray)
                 UsbService.CTS_CHANGE ->
-                    Toast.makeText(mActivity.get(), "CTS_CHANGE", Toast.LENGTH_LONG).show()
+                    Toast.makeText(mActivity, "CTS_CHANGE", Toast.LENGTH_LONG).show()
                 UsbService.DSR_CHANGE ->
-                    Toast.makeText(mActivity.get(), "DSR_CHANGE", Toast.LENGTH_LONG).show()
+                    Toast.makeText(mActivity, "DSR_CHANGE", Toast.LENGTH_LONG).show()
 
             }
         }

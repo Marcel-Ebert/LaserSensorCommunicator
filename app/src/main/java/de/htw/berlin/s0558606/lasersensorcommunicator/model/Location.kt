@@ -10,10 +10,10 @@ import com.google.android.gms.maps.model.LatLng
 @Entity(tableName = "location")
 data class Location(
         @ColumnInfo(name = "name")
-        val name: String,
+        var name: String = "",
 
         @ColumnInfo(name = "location")
-        val location: LatLng) {
+        var location: String = "") {
 
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)

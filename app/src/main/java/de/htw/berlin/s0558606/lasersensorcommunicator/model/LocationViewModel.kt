@@ -6,12 +6,11 @@ import android.arch.lifecycle.LiveData
 
 class LocationViewModel(application: Application) : AndroidViewModel(application) {
 
-    val allLocations: LiveData<List<Location>>
+    val allLocations: LiveData<List<Location>>?
 
-    private val mRepository: LocationRepository
+    private val mRepository: LocationRepository = LocationRepository(application)
 
     init {
-        mRepository = LocationRepository(application)
         allLocations = mRepository.allLocations
     }
 

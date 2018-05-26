@@ -3,6 +3,7 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 import android.app.Application
 import android.arch.lifecycle.LiveData
 import android.os.AsyncTask
+import io.satoshipay.experiments.satoshipaywallet.database.LocationDataBase
 
 class LocationRepository
 /**
@@ -11,17 +12,17 @@ class LocationRepository
  */
 internal constructor(application: Application) {
 
-    private val locationDao: LocationDao
-    val allLocations: LiveData<List<Location>>
+    private val locationDao: LocationDao?
+    val allLocations: LiveData<List<Location>>?
 
     init {
-        val db = LocationDataBase.getDatabase(application)
-        locationDao = db.locationDao()
-        allLocations = locationDao.getAllLocations()
+        val db = AppDatabase.getDatabase(application)
+        locationDao = db?.locationDao()
+        allLocations = locationDao?.getAllLocations()
     }
 
     fun insert(item: Location) {
-        insertAsyncTask(locationDao).execute(item)
+//        insertAsyncTask(locationDao).execute(item)
     }
 
     private class insertAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Location, Void, Void>() {
