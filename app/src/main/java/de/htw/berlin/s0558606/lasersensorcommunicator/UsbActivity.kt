@@ -7,21 +7,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
 import android.os.Message
-import android.support.design.widget.CollapsingToolbarLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.widget.ImageView
+import android.view.View
 import android.widget.Toast
-import com.google.android.gms.maps.model.LatLng
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
-import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.SensorDataAdapter
 import kotlinx.android.synthetic.main.content_usb.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.toast
 import org.jetbrains.anko.warn
 
@@ -33,12 +29,12 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
     private val mUsbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-                UsbService.ACTION_USB_PERMISSION_GRANTED
-                -> toast("USB Ready")
+//                UsbService.ACTION_USB_PERMISSION_GRANTED
+//                -> toast("USB Ready")
                 UsbService.ACTION_USB_PERMISSION_NOT_GRANTED
                 -> toast("USB Permission not granted")
-                UsbService.ACTION_NO_USB
-                -> toast("No USB connected")
+//                UsbService.ACTION_NO_USB
+//                -> toast("No USB connected")
                 UsbService.ACTION_USB_DISCONNECTED
                 -> toast("USB disconnected")
                 UsbService.ACTION_USB_NOT_SUPPORTED
@@ -51,7 +47,6 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
         override fun onServiceConnected(arg0: ComponentName, arg1: IBinder) {
             usbService = (arg1 as UsbService.UsbBinder).service
             usbService?.setHandler(mHandler)
-            warn { "usb service connected" }
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -69,11 +64,29 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
     private var locationID: Long = 0
     private var locationName: String = "Location"
 
+    private lateinit var mService: Intent
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_usb)
 
         mHandler = MyHandler(this)
+
+        btn_start.onClick {
+            setFilters()
+            startService(UsbService::class.java, usbConnection, null)
+            btn_stop.apply { visibility = View.VISIBLE }
+            btn_start.apply { visibility = View.INVISIBLE }
+        }
+        btn_stop.onClick {
+            unregisterReceiver(mUsbReceiver)
+            stopService(mService)
+            unbindService(usbConnection)
+
+            btn_start.apply { visibility = View.VISIBLE }
+            btn_stop.apply { visibility = View.INVISIBLE }
+
+        }
 
         if (savedInstanceState == null) {
             locationID = intent.extras.getLong(ARG_ITEM_ID)
@@ -89,7 +102,6 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
                 data?.run {
                     dataAdapter.dataList = data
                     dataAdapter.notifyDataSetChanged()
-                    warn { "onchanged called" }
                 }
             })
 
@@ -101,42 +113,31 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
             rv_sensor_items.setHasFixedSize(true)
             rv_sensor_items.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
 
-            addNewSensorData("0", "10")
         }
     }
 
-    private fun addNewSensorData(pm25: String, pm10: String) {
-        warn { "Function called" }
-        mSensorDataViewModel.insert(SensorData(pm25, pm10, locationID))
-    }
-
-
-    override fun onResume() {
-        super.onResume()
-        setFilters()  // Start listening notifications from UsbService
-        startService(UsbService::class.java, usbConnection, null) // Start UsbService(if it was not started before) and Bind it
-    }
-
-    override fun onPause() {
-        super.onPause()
-        unregisterReceiver(mUsbReceiver)
-        unbindService(usbConnection)
+    private fun addNewSensorData(data: SensorData) {
+        if (data.initializedCorrectly) {
+            data.locationID = locationID
+            mSensorDataViewModel.insert(data)
+        }
     }
 
     private fun startService(service: Class<*>, serviceConnection: ServiceConnection, extras: Bundle?) {
         if (!UsbService.SERVICE_CONNECTED) {
-            val startService = Intent(this, service)
+            mService = Intent(this, service)
             if (extras != null && !extras.isEmpty) {
                 val keys = extras.keySet()
                 for (key in keys) {
                     val extra = extras.getString(key)
-                    startService.putExtra(key, extra)
+                    mService.putExtra(key, extra)
                 }
             }
-            startService(startService)
+            startService(mService)
+
+            val bindingIntent = Intent(this, service)
+            bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
-        val bindingIntent = Intent(this, service)
-        bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun setFilters() {
@@ -158,7 +159,7 @@ class UsbActivity : AppCompatActivity(), AnkoLogger {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
                 UsbService.MESSAGE_FROM_SERIAL_PORT ->
-                    mActivity.textView2?.text = bytesToHex(msg.obj as ByteArray)
+                    mActivity.addNewSensorData(SensorData(msg.obj as ByteArray))
                 UsbService.CTS_CHANGE ->
                     Toast.makeText(mActivity, "CTS_CHANGE", Toast.LENGTH_LONG).show()
                 UsbService.DSR_CHANGE ->

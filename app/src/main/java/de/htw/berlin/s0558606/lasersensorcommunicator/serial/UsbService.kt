@@ -12,13 +12,9 @@ import android.hardware.usb.UsbManager
 import android.os.Binder
 import android.os.Handler
 import android.os.IBinder
-
 import com.felhr.usbserial.CDCSerialDevice
 import com.felhr.usbserial.UsbSerialDevice
 import com.felhr.usbserial.UsbSerialInterface
-import org.jetbrains.anko.toast
-
-import java.util.HashMap
 
 class UsbService : Service() {
 
@@ -126,6 +122,8 @@ class UsbService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        serialPort?.close()
+        unregisterReceiver(usbReceiver)
         UsbService.SERVICE_CONNECTED = false
     }
 
@@ -195,48 +193,52 @@ class UsbService : Service() {
      */
     private inner class ConnectionThread : Thread() {
         override fun run() {
-            serialPort = UsbSerialDevice.createUsbSerialDevice(device!!, connection)
-            if (serialPort != null) {
-                if (serialPort!!.open()) {
-                    serialPortConnected = true
-                    serialPort!!.setBaudRate(BAUD_RATE)
-                    serialPort!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
-                    serialPort!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
-                    serialPort!!.setParity(UsbSerialInterface.PARITY_NONE)
-                    /**
-                     * Current flow control Options:
-                     * UsbSerialInterface.FLOW_CONTROL_OFF
-                     * UsbSerialInterface.FLOW_CONTROL_RTS_CTS only for CP2102 and FT232
-                     * UsbSerialInterface.FLOW_CONTROL_DSR_DTR only for CP2102 and FT232
-                     */
-                    serialPort!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
-                    serialPort!!.read(mCallback)
-                    serialPort!!.getCTS(ctsCallback)
-                    serialPort!!.getDSR(dsrCallback)
+            try {
+                serialPort = UsbSerialDevice.createUsbSerialDevice(device!!, connection)
+                if (serialPort != null) {
+                    if (serialPort!!.open()) {
+                        serialPortConnected = true
+                        serialPort!!.setBaudRate(BAUD_RATE)
+                        serialPort!!.setDataBits(UsbSerialInterface.DATA_BITS_8)
+                        serialPort!!.setStopBits(UsbSerialInterface.STOP_BITS_1)
+                        serialPort!!.setParity(UsbSerialInterface.PARITY_NONE)
+                        /**
+                         * Current flow control Options:
+                         * UsbSerialInterface.FLOW_CONTROL_OFF
+                         * UsbSerialInterface.FLOW_CONTROL_RTS_CTS only for CP2102 and FT232
+                         * UsbSerialInterface.FLOW_CONTROL_DSR_DTR only for CP2102 and FT232
+                         */
+                        serialPort!!.setFlowControl(UsbSerialInterface.FLOW_CONTROL_OFF)
+                        serialPort!!.read(mCallback)
+                        serialPort!!.getCTS(ctsCallback)
+                        serialPort!!.getDSR(dsrCallback)
 
-                    //
-                    // Some Arduinos would need some sleep because firmware wait some time to know whether a new sketch is going
-                    // to be uploaded or not
-                    //Thread.sleep(2000); // sleep some. YMMV with different chips.
+                        //
+                        // Some Arduinos would need some sleep because firmware wait some time to know whether a new sketch is going
+                        // to be uploaded or not
+                        // Thread.sleep(2000) // sleep some. YMMV with different chips.
 
-                    // Everything went as expected. Send an intent to MainActivity
-                    val intent = Intent(ACTION_USB_READY)
-                    context!!.sendBroadcast(intent)
-                } else {
-                    // Serial port could not be opened, maybe an I/O error or if CDC driver was chosen, it does not really fit
-                    // Send an Intent to Main Activity
-                    if (serialPort is CDCSerialDevice) {
-                        val intent = Intent(ACTION_CDC_DRIVER_NOT_WORKING)
+                        // Everything went as expected. Send an intent to MainActivity
+                        val intent = Intent(ACTION_USB_READY)
                         context!!.sendBroadcast(intent)
                     } else {
-                        val intent = Intent(ACTION_USB_DEVICE_NOT_WORKING)
-                        context!!.sendBroadcast(intent)
+                        // Serial port could not be opened, maybe an I/O error or if CDC driver was chosen, it does not really fit
+                        // Send an Intent to Main Activity
+                        if (serialPort is CDCSerialDevice) {
+                            val intent = Intent(ACTION_CDC_DRIVER_NOT_WORKING)
+                            context!!.sendBroadcast(intent)
+                        } else {
+                            val intent = Intent(ACTION_USB_DEVICE_NOT_WORKING)
+                            context!!.sendBroadcast(intent)
+                        }
                     }
+                } else {
+                    // No driver for given device, even generic CDC driver could not be loaded
+                    val intent = Intent(ACTION_USB_NOT_SUPPORTED)
+                    context!!.sendBroadcast(intent)
                 }
-            } else {
-                // No driver for given device, even generic CDC driver could not be loaded
-                val intent = Intent(ACTION_USB_NOT_SUPPORTED)
-                context!!.sendBroadcast(intent)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
             }
         }
     }

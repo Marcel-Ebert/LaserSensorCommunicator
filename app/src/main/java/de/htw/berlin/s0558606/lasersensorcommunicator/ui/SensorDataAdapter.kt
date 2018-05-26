@@ -25,8 +25,7 @@ class SensorDataAdapter() : RecyclerView.Adapter<SensorDataAdapter.SensorDataVie
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as SensorData
         warn { "Clicked on SensorData: $item" }
-//        startActivity<PlanetDetailActivity>(ARG_ITEM_ID to item.id)
-        startActivity(view.context, Intent(view.context, UsbActivity::class.java), null)
+//        startActivity(view.context, Intent(view.context, UsbActivity::class.java), null)
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): SensorDataViewHolder {

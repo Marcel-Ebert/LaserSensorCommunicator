@@ -17,17 +17,45 @@ import java.util.*
             childColumns = arrayOf("location_id"),
             onDelete = CASCADE))])
 @TypeConverters(DateConverter::class)
-data class SensorData(val pm25: String,
-                      val pm10: String,
+data class SensorData(var pm25: String = "",
+                      var pm10: String = "",
 
                       @ColumnInfo(name = "location_id")
-                      val locationID: Long) {
+                      var locationID: Long = 0) {
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0
 
     @ColumnInfo(name = "timestamp")
     var timestamp: Date = Date()
+
+    @Ignore
+    val unit: String = "µg/m³"
+
+    @Ignore
+    var initializedCorrectly = true
+
+    constructor(bytes: ByteArray) : this() {
+        populateDataFromBytes(bytes)
+    }
+
+    private fun populateDataFromBytes(bytes: ByteArray) {
+        if (bytes.isNotEmpty()) {
+            val pm25lowbyte = bytes[2]
+            val pm25highbyte = bytes[3]
+            val pm25d: Double = ((pm25highbyte * 256.0) + pm25lowbyte) / 10.0
+
+            val pm10lowbyte = bytes[4]
+            val pm10highbyte = bytes[5]
+            val pm10d: Double = ((pm10highbyte * 256.0) + pm10lowbyte) / 10.0
+
+            pm25 = pm25d.toString() + unit
+            pm10 = pm10d.toString() + unit
+        } else {
+            initializedCorrectly = false
+        }
+    }
+
 
     fun getDateAsString(): String {
         return SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(timestamp)
