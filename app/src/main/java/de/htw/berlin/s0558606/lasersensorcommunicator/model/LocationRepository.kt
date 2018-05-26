@@ -24,12 +24,23 @@ internal constructor(application: Application) {
         insertAsyncTask(locationDao!!).execute(item)
     }
 
+    fun findLocationById(id: Long): Location {
+        return locationDao?.findLocationById(id)!!
+    }
+
     private class insertAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Location, Void, Void>() {
 
         override fun doInBackground(vararg params: Location): Void? {
             mAsyncTaskDao.insertLocation(params[0])
             return null
         }
+    }
+
+    private class findLocationAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Long, Void, Location>() {
+        override fun doInBackground(vararg params: Long?): Location {
+            return mAsyncTaskDao.findLocationById(params[0]!!)
+        }
+
     }
 
 }

@@ -2,6 +2,7 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 
 import android.arch.persistence.room.*
 import android.arch.persistence.room.ForeignKey.CASCADE
+import android.os.Build.VERSION_CODES.M
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -43,14 +44,14 @@ data class SensorData(var pm25: String = "",
         if (bytes.isNotEmpty()) {
             val pm25lowbyte = bytes[2]
             val pm25highbyte = bytes[3]
-            val pm25d: Double = ((pm25highbyte * 256.0) + pm25lowbyte) / 10.0
+            val pm25d: Double = Math.abs(((pm25highbyte * 256.0) + pm25lowbyte) / 10.0)
 
             val pm10lowbyte = bytes[4]
             val pm10highbyte = bytes[5]
-            val pm10d: Double = ((pm10highbyte * 256.0) + pm10lowbyte) / 10.0
+            val pm10d: Double = Math.abs(((pm10highbyte * 256.0) + pm10lowbyte) / 10.0)
 
-            pm25 = pm25d.toString() + unit
-            pm10 = pm10d.toString() + unit
+            pm25 = pm25d.toString()
+            pm10 = pm10d.toString()
         } else {
             initializedCorrectly = false
         }

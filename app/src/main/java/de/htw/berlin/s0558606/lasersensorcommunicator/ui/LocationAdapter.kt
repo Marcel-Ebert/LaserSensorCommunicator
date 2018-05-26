@@ -1,6 +1,5 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 
-import android.arch.lifecycle.LiveData
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
@@ -43,7 +42,10 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
         val data = dataList.get(position)
         holder.tv_name.text = "${data.name}"
-        holder.tv_location.text = "${data.location}"
+        holder.tv_pm25.text = "${data.pm25}"
+        holder.tv_pm10.text = "${data.pm10}"
+        holder.tv_starttime.text = "${data.start}"
+        holder.tv_endtime.text = "${data.end}"
 
         // can be retrieved from click listener
         holder.itemView.tag = data

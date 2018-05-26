@@ -18,4 +18,8 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         mRepository.insert(location)
     }
 
+    fun findLocationById(id: Long): Location {
+        return mRepository.findLocationById(id)
+    }
+
 }
