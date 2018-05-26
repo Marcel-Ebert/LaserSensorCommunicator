@@ -28,6 +28,9 @@ data class SensorData(val pm25: String,
     @ColumnInfo(name = "timestamp")
     var timestamp: Date = Date()
 
+    @ColumnInfo(name = "location_id")
+    var locationID: Long = 0
+
     fun getDateAsString(): String {
         return SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(timestamp)
     }

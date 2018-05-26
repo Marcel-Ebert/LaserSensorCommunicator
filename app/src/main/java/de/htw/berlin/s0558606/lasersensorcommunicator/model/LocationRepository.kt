@@ -16,7 +16,7 @@ internal constructor(application: Application) {
     val allLocations: LiveData<List<Location>>?
 
     init {
-        val db = AppDatabase.getDatabase(application)
+        val db = AppDatabase.getInstance(application)
         locationDao = db?.locationDao()
         allLocations = locationDao?.getAllLocations()
     }
