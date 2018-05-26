@@ -87,6 +87,10 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
         }
 
         btn_end.onClick {
+            // perform stop
+            btn_stop.performClick()
+
+
             var list = dataAdapter.dataList
             val end = list?.get(0)?.timestamp
             val start = list?.get(list.lastIndex)?.timestamp
@@ -109,6 +113,8 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             measurement.pm25 = averagePM25.toString()
             mMeasurementViewModel.insert(measurement)
 
+            // exit here
+            finish()
         }
 
         if (savedInstanceState == null) {

@@ -3,6 +3,7 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
+import android.text.TextUtils.substring
 import android.view.LayoutInflater
 import android.view.View
 import de.htw.berlin.s0558606.lasersensorcommunicator.ARG_ITEM_ID
@@ -41,8 +42,8 @@ class MeasurementAdapter() : RecyclerView.Adapter<MeasurementAdapter.Measurement
         val data = dataList.get(position)
         holder.tv_starttime.text = "${data.getStartAsString()}"
         holder.tv_endtime.text = "${data.getEndAsString()}"
-        holder.tv_pm10.text = "PM10: ${data.pm10}"
-        holder.tv_pm25.text = "PM2.5: ${data.pm25}"
+        holder.tv_pm25.text = "%.4f".format(data.pm25.toDouble())
+        holder.tv_pm10.text = "%.4f".format(data.pm10.toDouble())
         holder.tv_id.text = "# ${data.id}"
 
         // can be retrieved from click listener
