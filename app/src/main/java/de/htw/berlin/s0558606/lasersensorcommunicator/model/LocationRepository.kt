@@ -13,16 +13,16 @@ class LocationRepository
 internal constructor(application: Application) {
 
     private val locationDao: LocationDao?
-    val allLocations: LiveData<List<Location>>?
+    val allLocations: LiveData<List<Location>>
 
     init {
         val db = AppDatabase.getInstance(application)
-        locationDao = db?.locationDao()
-        allLocations = locationDao?.getAllLocations()
+        locationDao = db.locationDao()
+        allLocations = locationDao.getAllLocations()
     }
 
     fun insert(item: Location) {
-//        insertAsyncTask(locationDao).execute(item)
+        insertAsyncTask(locationDao!!).execute(item)
     }
 
     private class insertAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Location, Void, Void>() {

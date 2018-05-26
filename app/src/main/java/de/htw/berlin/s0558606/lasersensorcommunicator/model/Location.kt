@@ -8,12 +8,13 @@ import com.google.android.gms.maps.model.LatLng
  */
 
 @Entity(tableName = "location")
+@TypeConverters(LatLngConverter::class)
 data class Location(
         @ColumnInfo(name = "name")
-        var name: String = "",
+        var name: String,
 
         @ColumnInfo(name = "location")
-        var location: String = "") {
+        var location: LatLng) {
 
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = true)

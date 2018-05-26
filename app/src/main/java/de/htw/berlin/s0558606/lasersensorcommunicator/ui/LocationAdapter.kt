@@ -1,17 +1,16 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 
+import android.arch.lifecycle.LiveData
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
-import de.htw.berlin.s0558606.lasersensorcommunicator.MapsActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.R
 import de.htw.berlin.s0558606.lasersensorcommunicator.UsbActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.location_list_item.*
-import kotlinx.android.synthetic.main.sensor_list_item.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.warn
 
@@ -19,7 +18,9 @@ import org.jetbrains.anko.warn
 /**
  * Created by Marcel Ebert S0558606 on 20.05.18.
  */
-class LocationAdapter(var dataList: List<Location>) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
+class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
+
+    var dataList: List<Location> = listOf()
 
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as Location
@@ -35,9 +36,9 @@ class LocationAdapter(var dataList: List<Location>) : RecyclerView.Adapter<Locat
     }
 
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
-        val data = dataList[position]
-        holder.tv_name.text = "Name: ${data.name}"
-        holder.tv_location.text = "Location: ${data.location}"
+        val data = dataList.get(position)
+        holder.tv_name.text = "${data.name}"
+        holder.tv_location.text = "${data.location}"
 
         // can be retrieved from click listener
         holder.itemView.tag = data
