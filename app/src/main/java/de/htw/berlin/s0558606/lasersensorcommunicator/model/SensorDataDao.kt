@@ -19,7 +19,7 @@ interface SensorDataDao {
     fun findDataById(id: Long): SensorData
 
 
-    @Query("SELECT * FROM sensordata where location_id = :id")
+    @Query("SELECT * FROM sensordata where location_id = :id order by timestamp desc")
     fun findDataByLocationId(id: Long): LiveData<List<SensorData>>
 
     @Insert(onConflict = REPLACE)
