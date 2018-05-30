@@ -29,12 +29,23 @@ class SensorDataAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<S
 //        startActivity(view.context, Intent(view.context, SensorActivity::class.java), null)
     }
 
-
-
     private val longClickListener = View.OnLongClickListener { view ->
-        val data = view.tag as SensorData
-        showDeleteSensorDataDialog(data)
+        val item = view.tag as SensorData
+        showDeleteSensorDataDialog(item)
         true
+    }
+
+    private fun showDeleteSensorDataDialog(item: SensorData) {
+        context.alert {
+            title = "Delete this Data?"
+            positiveButton(context.getString(android.R.string.yes)) { deleteSensorData(item) }
+            negativeButton(context.getString(android.R.string.cancel)) { }
+        }.show()
+    }
+
+    private fun deleteSensorData(item: SensorData){
+        sensorDataViewModel.delete(item)
+        warn { "Deleted SensorData: $item" }
     }
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): SensorDataViewHolder {
@@ -56,20 +67,6 @@ class SensorDataAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<S
     }
 
     override fun getItemCount(): Int = dataList.size
-
-    private fun showDeleteSensorDataDialog(data: SensorData) {
-        context.alert {
-            title = "Delete this Data Item?"
-            positiveButton(context.getString(android.R.string.yes)) { deleteSensorData(data) }
-            negativeButton(context.getString(android.R.string.cancel)) { }
-        }.show()
-    }
-
-    private fun deleteSensorData(data: SensorData){
-        sensorDataViewModel.delete(data)
-        warn { "Deleted SensorData: $data" }
-    }
-
 
     inner class SensorDataViewHolder(override val containerView: View) : RecyclerView.ViewHolder(containerView), LayoutContainer
 

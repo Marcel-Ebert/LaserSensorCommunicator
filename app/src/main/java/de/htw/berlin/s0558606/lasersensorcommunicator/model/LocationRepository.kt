@@ -24,6 +24,10 @@ internal constructor(application: Application) {
         insertAsyncTask(locationDao!!).execute(item)
     }
 
+    fun delete(item: Location) {
+        locationDao?.deleteLocation(item)
+    }
+
     fun findLocationById(id: Long): Location {
         return locationDao?.findLocationById(id)!!
     }

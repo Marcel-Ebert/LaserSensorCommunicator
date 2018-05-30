@@ -18,6 +18,10 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         mRepository.insert(location)
     }
 
+    fun delete(location: Location) {
+        mRepository.delete(location)
+    }
+
     fun findLocationById(id: Long): Location {
         return mRepository.findLocationById(id)
     }

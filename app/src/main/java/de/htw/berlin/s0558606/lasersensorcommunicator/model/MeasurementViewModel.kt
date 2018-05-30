@@ -18,6 +18,10 @@ class MeasurementViewModel(application: Application) : AndroidViewModel(applicat
         mRepository.insert(measurement)
     }
 
+    fun delete(measurement: Measurement) {
+        mRepository.delete(measurement)
+    }
+
     fun getMeasurementByID(id: Long): Measurement {
         return mRepository.getMeasurementID(id)
     }

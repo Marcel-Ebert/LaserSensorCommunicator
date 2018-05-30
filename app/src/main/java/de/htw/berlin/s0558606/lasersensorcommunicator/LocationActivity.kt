@@ -40,7 +40,7 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
 
             warn { "LocationID = ${locationID}" }
 
-            dataAdapter = MeasurementAdapter()
+            dataAdapter = MeasurementAdapter(this)
             rv_measurements.adapter = dataAdapter
 
             mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)

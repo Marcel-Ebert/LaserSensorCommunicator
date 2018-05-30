@@ -24,6 +24,10 @@ internal constructor(application: Application) {
         insertAsyncTask(measurementDao!!).execute(item)
     }
 
+    fun delete(item: Measurement){
+        measurementDao?.deleteMeasurement(item)
+    }
+
     fun getMeasurementsByLocationID(id: Long): LiveData<List<Measurement>> {
         return measurementDao?.findMeasurementsByLocationID(id)!!
     }

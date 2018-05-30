@@ -31,6 +31,8 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
         startActivity(view.context, intent, null)
     }
 
+
+
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): LocationViewHolder {
         val view = LayoutInflater.from(parent.context)
                 .inflate(R.layout.location_list_item, parent, false)
