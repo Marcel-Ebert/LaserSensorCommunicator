@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/set_position"
+        android:title="@string/set_position"
+        android:icon="@drawable/ic_gps"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/add_measurement"
+        android:title="@string/add_measurement"
+        android:icon="@drawable/ic_add"
+        app:showAsAction="ifRoom"/>
+</menu>

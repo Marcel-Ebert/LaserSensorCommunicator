@@ -8,15 +8,18 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.EditText
 import com.google.android.gms.maps.model.LatLng
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Measurement
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.MeasurementAdapter
 import kotlinx.android.synthetic.main.activity_location.*
 import kotlinx.android.synthetic.main.content_location.*
-import org.jetbrains.anko.AnkoLogger
-import org.jetbrains.anko.warn
+import org.jetbrains.anko.*
 
 class LocationActivity : AppCompatActivity(), AnkoLogger {
 
@@ -59,13 +62,37 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
 
         }
 
-        addNewMeasurement()
-
     }
 
     private fun addNewMeasurement() {
-        warn { "Function called" }
         mMeasurementViewModel.insert(Measurement(locationID = locationID))
+    }
+
+    private fun showAddMeasurementDialog() {
+        alert {
+            title = "Add new Measurement?"
+            positiveButton(getString(android.R.string.yes)) { addNewMeasurement() }
+            negativeButton(getString(android.R.string.cancel)) { }
+        }.show()
+    }
+
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.location_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when (item?.itemId) {
+            R.id.add_measurement -> {
+                showAddMeasurementDialog()
+                true
+            }
+            R.id.set_position -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 }

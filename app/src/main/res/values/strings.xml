@@ -6,4 +6,6 @@
     <string name="title_activity_usb">USB Serial Reader</string>
     <string name="title_activity_location">LocationActivity</string>
     <string name="add_location">Add location</string>
+    <string name="add_measurement">Add Measurement</string>
+    <string name="set_position">Set Position</string>
 </resources>

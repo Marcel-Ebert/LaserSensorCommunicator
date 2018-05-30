@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     }
 
-    private fun showAddLocationdialog() {
+    private fun showAddLocationDialog() {
         alert {
             title = "Add new Location"
             lateinit var etLocation: EditText
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
                     padding = dip(16)
                 }
             }
-            positiveButton("Cool") { addNewLocation(etLocation.text.toString(), LatLng(0.0, 0.0)) }
+            positiveButton(getString(android.R.string.yes)) { addNewLocation(etLocation.text.toString(), LatLng(0.0, 0.0)) }
         }.show()
     }
 
@@ -80,7 +80,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         return when (item?.itemId) {
             R.id.add_location -> {
-                showAddLocationdialog()
+                showAddLocationDialog()
                 true
             }
             else -> super.onOptionsItemSelected(item)
