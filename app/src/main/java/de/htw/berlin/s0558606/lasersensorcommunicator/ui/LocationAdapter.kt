@@ -1,25 +1,31 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import de.htw.berlin.s0558606.lasersensorcommunicator.*
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.location_list_item.*
 import kotlinx.android.synthetic.main.measurement_list_item.*
 import org.jetbrains.anko.AnkoLogger
+import org.jetbrains.anko.alert
 import org.jetbrains.anko.warn
 
 
 /**
  * Created by Marcel Ebert S0558606 on 20.05.18.
  */
-class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
+class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
 
     var dataList: List<Location> = listOf()
+    val locationViewModel = ViewModelProviders.of(context).get(LocationViewModel::class.java)
+
 
     private val clickListener = View.OnClickListener { view ->
         val item = view.tag as Location
@@ -31,6 +37,24 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
         startActivity(view.context, intent, null)
     }
 
+    private val longClickListener = View.OnLongClickListener { view ->
+        val item = view.tag as Location
+        showDeleteLocationDialog(item)
+        true
+    }
+
+    private fun showDeleteLocationDialog(item: Location) {
+        context.alert {
+            title = "Delete this Location?"
+            positiveButton(context.getString(android.R.string.yes)) { deleteLocation(item) }
+            negativeButton(context.getString(android.R.string.cancel)) { }
+        }.show()
+    }
+
+    private fun deleteLocation(item: Location) {
+        locationViewModel.delete(item)
+        warn { "Deleted Location: $item" }
+    }
 
 
     override fun onCreateViewHolder(parent: android.view.ViewGroup, type: Int): LocationViewHolder {
@@ -47,6 +71,7 @@ class LocationAdapter() : RecyclerView.Adapter<LocationAdapter.LocationViewHolde
         // can be retrieved from click listener
         holder.itemView.tag = data
         holder.itemView.setOnClickListener(clickListener)
+        holder.itemView.setOnLongClickListener(longClickListener)
     }
 
     override fun getItemCount(): Int = dataList.size

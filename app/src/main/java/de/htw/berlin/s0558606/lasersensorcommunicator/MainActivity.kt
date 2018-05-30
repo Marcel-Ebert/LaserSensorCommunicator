@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         supportActionBar?.title = getString(R.string.title_activity_main)
 
 
-        locationAdapter = LocationAdapter()
+        locationAdapter = LocationAdapter(this)
         rv_locations.adapter = locationAdapter
 
         mLocationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)

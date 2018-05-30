@@ -125,13 +125,12 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             measurementID = intent.extras.getLong(ARG_ITEM_ID)
             warn { "LocationID = ${measurementID}" }
 
-            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
-
             dataAdapter = SensorDataAdapter(this)
             rv_sensor_items.adapter = dataAdapter
 
             mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
 
+            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
             mSensorDataViewModel.getDataByMeasurementID(measurementID)?.observe(this, Observer<List<SensorData>> { data ->
                 // Update the cached copy of the words in the adapter.
                 data?.run {
