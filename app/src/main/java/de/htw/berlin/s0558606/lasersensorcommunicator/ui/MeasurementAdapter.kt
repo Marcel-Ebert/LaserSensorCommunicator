@@ -1,5 +1,6 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.ui
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v4.content.ContextCompat.startActivity
 import android.support.v7.widget.RecyclerView
@@ -10,6 +11,7 @@ import de.htw.berlin.s0558606.lasersensorcommunicator.ARG_ITEM_ID
 import de.htw.berlin.s0558606.lasersensorcommunicator.R
 import de.htw.berlin.s0558606.lasersensorcommunicator.SensorActivity
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Measurement
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.measurement_list_item.*
 import org.jetbrains.anko.AnkoLogger

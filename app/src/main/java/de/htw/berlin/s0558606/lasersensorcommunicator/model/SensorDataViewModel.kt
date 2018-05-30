@@ -18,6 +18,10 @@ class SensorDataViewModel(application: Application) : AndroidViewModel(applicati
         mRepository.insert(data)
     }
 
+    fun delete(data: SensorData) {
+        mRepository.delete(data)
+    }
+
     fun getDataByMeasurementID(id: Long): LiveData<List<SensorData>> {
         return mRepository.getDataByMeasurementID(id)
     }

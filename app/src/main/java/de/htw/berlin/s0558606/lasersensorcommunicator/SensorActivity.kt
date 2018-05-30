@@ -55,6 +55,7 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
     private var usbService: UsbService? = null
     private lateinit var mHandler: MyHandler
 
+    private var serviceRunning: Boolean = false
 
     private lateinit var mSensorDataViewModel: SensorDataViewModel
     private lateinit var mMeasurementViewModel: MeasurementViewModel
@@ -73,6 +74,7 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
         btn_start.onClick {
             setFilters()
             startService(UsbService::class.java, usbConnection, null)
+            serviceRunning = true
             btn_stop.apply { visibility = View.VISIBLE }
             btn_start.apply { visibility = View.INVISIBLE }
         }
@@ -80,6 +82,7 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             unregisterReceiver(mUsbReceiver)
             stopService(mService)
             unbindService(usbConnection)
+            serviceRunning = false
 
             btn_start.apply { visibility = View.VISIBLE }
             btn_stop.apply { visibility = View.INVISIBLE }
@@ -88,31 +91,32 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
 
         btn_end.onClick {
             // perform stop
-            btn_stop.performClick()
-
+            if (serviceRunning)
+                btn_stop.performClick()
 
             var list = dataAdapter.dataList
-            val end = list?.get(0)?.timestamp
-            val start = list?.get(list.lastIndex)?.timestamp
+            if (list?.isNotEmpty()) {
+                val end = list?.get(0)?.timestamp
+                val start = list?.get(list.lastIndex)?.timestamp
 
-            // calculate average values
-            var averagePM25: Double = 0.0
-            var averagePM10: Double = 0.0
+                // calculate average values
+                var averagePM25: Double = 0.0
+                var averagePM10: Double = 0.0
 
-            list.forEach {
-                averagePM25 = averagePM25.plus(it.pm25.toDouble())
-                averagePM10 = averagePM10.plus(it.pm10.toDouble())
+                list.forEach {
+                    averagePM25 = averagePM25.plus(it.pm25.toDouble())
+                    averagePM10 = averagePM10.plus(it.pm10.toDouble())
+                }
+                averagePM25 /= list.size
+                averagePM10 /= list.size
+
+                var measurement = mMeasurementViewModel.getMeasurementByID(measurementID)
+                measurement.start = start!!
+                measurement.end = end!!
+                measurement.pm10 = averagePM10.toString()
+                measurement.pm25 = averagePM25.toString()
+                mMeasurementViewModel.insert(measurement)
             }
-            averagePM25 /= list.size
-            averagePM10 /= list.size
-
-            var measurement = mMeasurementViewModel.getMeasurementByID(measurementID)
-            measurement.start = start!!
-            measurement.end = end!!
-            measurement.pm10 = averagePM10.toString()
-            measurement.pm25 = averagePM25.toString()
-            mMeasurementViewModel.insert(measurement)
-
             // exit here
             finish()
         }
@@ -121,12 +125,13 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             measurementID = intent.extras.getLong(ARG_ITEM_ID)
             warn { "LocationID = ${measurementID}" }
 
-            dataAdapter = SensorDataAdapter()
+            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
+
+            dataAdapter = SensorDataAdapter(this)
             rv_sensor_items.adapter = dataAdapter
 
             mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
 
-            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
             mSensorDataViewModel.getDataByMeasurementID(measurementID)?.observe(this, Observer<List<SensorData>> { data ->
                 // Update the cached copy of the words in the adapter.
                 data?.run {

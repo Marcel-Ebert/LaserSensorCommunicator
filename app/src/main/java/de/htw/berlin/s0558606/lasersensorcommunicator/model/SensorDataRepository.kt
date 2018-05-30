@@ -24,6 +24,10 @@ internal constructor(application: Application) {
         insertAsyncTask(sensorDataDao!!).execute(item)
     }
 
+    fun delete(item:SensorData){
+        sensorDataDao?.deleteData(item)
+    }
+
     fun getDataByMeasurementID(id: Long): LiveData<List<SensorData>> {
         return sensorDataDao?.findDataByMeasurementId(id)!!
     }
