@@ -2,7 +2,9 @@ package de.htw.berlin.s0558606.lasersensorcommunicator
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -15,6 +17,7 @@ import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
 import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 const val ARG_ITEM_ID = "item_id"
@@ -50,6 +53,10 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
         rv_locations.setHasFixedSize(true)
         rv_locations.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+
+        btn_show_locations.onClick {
+            startActivity<ShowLocationsActivity>()
+        }
 
     }
 

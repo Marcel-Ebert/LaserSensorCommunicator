@@ -37,12 +37,15 @@
 
         <service
             android:name=".serial.UsbService"
-            android:enabled="true"></service>
+            android:enabled="true" />
 
         <activity
             android:name=".LocationActivity"
             android:label="@string/title_activity_location"
-            android:theme="@style/MaterialTheme"></activity>
+            android:theme="@style/MaterialTheme" />
+        <activity
+            android:name=".ShowLocationsActivity"
+            android:label="@string/title_activity_show_locations"></activity>
     </application>
 
 </manifest>

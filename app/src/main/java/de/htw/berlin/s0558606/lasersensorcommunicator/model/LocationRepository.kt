@@ -20,6 +20,10 @@ internal constructor(application: Application) {
         allLocations = locationDao.getAllLocations()
     }
 
+    fun getAllLocationsSynchronous(): List<Location> {
+        return locationDao!!.getAllLocationsSynchronous()
+    }
+
     fun insert(item: Location) {
         insertAsyncTask(locationDao!!).execute(item)
     }

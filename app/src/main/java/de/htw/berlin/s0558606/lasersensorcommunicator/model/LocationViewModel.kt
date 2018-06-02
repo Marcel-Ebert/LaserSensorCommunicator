@@ -14,6 +14,10 @@ class LocationViewModel(application: Application) : AndroidViewModel(application
         allLocations = mRepository.allLocations
     }
 
+    fun getAllLocationsSynchronous(): List<Location> {
+        return mRepository.getAllLocationsSynchronous()
+    }
+
     fun insert(location: Location) {
         mRepository.insert(location)
     }

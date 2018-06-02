@@ -66,7 +66,6 @@ class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<Loc
     override fun onBindViewHolder(holder: LocationViewHolder, position: Int) {
         val data = dataList.get(position)
         holder.tv_name.text = "${data.name}"
-        holder.tv_location.text = "${data.location}"
 
         // can be retrieved from click listener
         holder.itemView.tag = data

@@ -13,9 +13,10 @@ import android.view.MenuItem
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Measurement
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.MeasurementAdapter
-import kotlinx.android.synthetic.main.activity_save_location.*
-import kotlinx.android.synthetic.main.content_save_location.*
+import kotlinx.android.synthetic.main.activity_location.*
+import kotlinx.android.synthetic.main.content_location.*
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 class LocationActivity : AppCompatActivity(), AnkoLogger {
 
@@ -27,7 +28,7 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_save_location)
+        setContentView(R.layout.activity_location)
         setSupportActionBar(toolbar)
 
         if (savedInstanceState == null) {
@@ -54,7 +55,10 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
             rv_measurements.setHasFixedSize(true)
             rv_measurements.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
             rv_measurements.addItemDecoration(DividerItemDecoration(applicationContext, DividerItemDecoration.VERTICAL))
+        }
 
+        btn_show_location.onClick {
+            startActivity<ShowLocationsActivity>(ARG_ITEM_ID to locationID)
         }
 
     }

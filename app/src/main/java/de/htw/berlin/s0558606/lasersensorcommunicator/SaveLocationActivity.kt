@@ -21,8 +21,8 @@ import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
-import kotlinx.android.synthetic.main.activity_maps.*
-import kotlinx.android.synthetic.main.content_maps.*
+import kotlinx.android.synthetic.main.activity_save_location.*
+import kotlinx.android.synthetic.main.content_save_location.*
 import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.toast
 
@@ -31,20 +31,18 @@ import org.jetbrains.anko.toast
  * An activity that displays a map showing the place at the device's current location.
  */
 class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
-    private var mMap: GoogleMap? = null
-    private var mCameraPosition: CameraPosition? = null
+    private var map: GoogleMap? = null
+    private var cameraPosition: CameraPosition? = null
 
     // The entry point to the Fused Location Provider.
-    private var mFusedLocationProviderClient: FusedLocationProviderClient? = null
+    private var fusedLocationProviderClient: FusedLocationProviderClient? = null
 
-    // A default location (Sydney, Australia) and default zoom to use when location permission is
-    // not granted.
-    private val mDefaultLocation = LatLng(-33.8523341, 151.2106085)
-    private var mLocationPermissionGranted: Boolean = false
+    private val defaultLocation = LatLng(52.504043, 13.393236)
+    private var locationPermissionGranted: Boolean = false
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private var mLastKnownLocation: Location? = null
+    private var lastKnownLocation: Location? = null
 
     private var locationID: Long = 0
     private lateinit var locationName: String
@@ -56,8 +54,8 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Retrieve location and camera position from saved instance state.
         if (savedInstanceState != null) {
-            mLastKnownLocation = savedInstanceState.getParcelable<Location>(KEY_LOCATION)
-            mCameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION)
+            lastKnownLocation = savedInstanceState.getParcelable<Location>(KEY_LOCATION)
+            cameraPosition = savedInstanceState.getParcelable(KEY_CAMERA_POSITION)
             locationID = savedInstanceState.getLong(ARG_ITEM_ID)
             locationName = savedInstanceState.getString(ARG_ITEM_NAME)
         } else {
@@ -65,14 +63,13 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             locationName = intent.extras.getString(ARG_ITEM_NAME)
         }
 
-        // Retrieve the content view that renders the map.
-        setContentView(R.layout.activity_maps)
+        setContentView(R.layout.activity_save_location)
 
         setSupportActionBar(toolbar)
         supportActionBar?.title = "Save Location for $locationName"
 
         // Construct a FusedLocationProviderClient.
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Build the map.
         val mapFragment = supportFragmentManager
@@ -84,8 +81,8 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
         btn_save_location.onClick {
             val location = locationViewModel.findLocationById(locationID)
-            val targetlocation = LatLng(mLastKnownLocation?.latitude
-                    ?: 0.0, mLastKnownLocation?.longitude ?: 0.0)
+            val targetlocation = LatLng(lastKnownLocation?.latitude
+                    ?: 0.0, lastKnownLocation?.longitude ?: 0.0)
             location.location = targetlocation
             locationViewModel.insert(location)
             toast("Location saved!")
@@ -97,9 +94,9 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * Saves the state of the map when the activity is paused.
      */
     override fun onSaveInstanceState(outState: Bundle) {
-        if (mMap != null) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mMap!!.cameraPosition)
-            outState.putParcelable(KEY_LOCATION, mLastKnownLocation)
+        if (map != null) {
+            outState.putParcelable(KEY_CAMERA_POSITION, map!!.cameraPosition)
+            outState.putParcelable(KEY_LOCATION, lastKnownLocation)
             outState.putLong(ARG_ITEM_ID, locationID)
             outState.putString(ARG_ITEM_NAME, locationName)
             super.onSaveInstanceState(outState)
@@ -111,11 +108,11 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * This callback is triggered when the map is ready to be used.
      */
     override fun onMapReady(map: GoogleMap) {
-        mMap = map
+        this.map = map
 
         // Use a custom info window adapter to handle multiple lines of text in the
         // info window contents.
-        mMap!!.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
+        this.map!!.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
 
             override// Return null here, so that getInfoContents() is called next.
             fun getInfoWindow(arg0: Marker): View? {
@@ -156,21 +153,21 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
          * cases when a location is not available.
          */
         try {
-            if (mLocationPermissionGranted) {
-                val locationResult = mFusedLocationProviderClient!!.getLastLocation()
+            if (locationPermissionGranted) {
+                val locationResult = fusedLocationProviderClient!!.getLastLocation()
                 locationResult.addOnCompleteListener(this, { task ->
                     if (task.isSuccessful) {
                         // Set the map's camera position to the current location of the device.
-                        mLastKnownLocation = task.result
-                        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                LatLng(mLastKnownLocation!!.getLatitude(),
-                                        mLastKnownLocation!!.getLongitude()), DEFAULT_ZOOM.toFloat()))
+                        lastKnownLocation = task.result
+                        map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                                LatLng(lastKnownLocation!!.getLatitude(),
+                                        lastKnownLocation!!.getLongitude()), DEFAULT_ZOOM.toFloat()))
                     } else {
                         Log.d(TAG, "Current location is null. Using defaults.")
                         Log.e(TAG, "Exception: %s", task.exception)
-                        mMap!!.moveCamera(CameraUpdateFactory
-                                .newLatLngZoom(mDefaultLocation, DEFAULT_ZOOM.toFloat()))
-                        mMap!!.uiSettings.isMyLocationButtonEnabled = false
+                        map!!.moveCamera(CameraUpdateFactory
+                                .newLatLngZoom(defaultLocation, DEFAULT_ZOOM.toFloat()))
+                        map!!.uiSettings.isMyLocationButtonEnabled = false
                     }
                 })
             }
@@ -192,7 +189,7 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
          */
         if (ContextCompat.checkSelfPermission(this.applicationContext,
                         android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mLocationPermissionGranted = true
+            locationPermissionGranted = true
         } else {
             ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),
@@ -204,12 +201,12 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * Handles the result of the request for location permissions.
      */
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        mLocationPermissionGranted = false
+        locationPermissionGranted = false
         when (requestCode) {
             PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION -> {
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    mLocationPermissionGranted = true
+                    locationPermissionGranted = true
                 }
             }
         }
@@ -220,17 +217,17 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
      * Updates the map's UI settings based on whether the user has granted location permission.
      */
     private fun updateLocationUI() {
-        if (mMap == null) {
+        if (map == null) {
             return
         }
         try {
-            if (mLocationPermissionGranted) {
-                mMap!!.isMyLocationEnabled = true
-                mMap!!.uiSettings.isMyLocationButtonEnabled = true
+            if (locationPermissionGranted) {
+                map!!.isMyLocationEnabled = true
+                map!!.uiSettings.isMyLocationButtonEnabled = true
             } else {
-                mMap!!.isMyLocationEnabled = false
-                mMap!!.uiSettings.isMyLocationButtonEnabled = false
-                mLastKnownLocation = null
+                map!!.isMyLocationEnabled = false
+                map!!.uiSettings.isMyLocationButtonEnabled = false
+                lastKnownLocation = null
                 getLocationPermission()
             }
         } catch (e: SecurityException) {

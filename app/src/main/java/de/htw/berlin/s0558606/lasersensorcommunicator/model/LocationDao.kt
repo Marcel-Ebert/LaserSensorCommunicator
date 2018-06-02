@@ -15,6 +15,9 @@ interface LocationDao {
     @Query("SELECT * FROM location")
     fun getAllLocations(): LiveData<List<Location>>
 
+    @Query("SELECT * FROM location")
+    fun getAllLocationsSynchronous(): List<Location>
+
     @Query("SELECT * FROM location where id = :id")
     fun findLocationById(id: Long): Location
 
