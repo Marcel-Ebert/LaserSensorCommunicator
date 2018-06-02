@@ -9,6 +9,7 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.EditText
 import com.google.android.gms.maps.model.LatLng
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.AppDatabase
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
@@ -21,7 +22,7 @@ const val ARG_ITEM_NAME = "item_name"
 
 class MainActivity : AppCompatActivity(), AnkoLogger {
 
-    private lateinit var mLocationViewModel: LocationViewModel
+    private lateinit var locationViewModel: LocationViewModel
 
     private lateinit var locationAdapter: LocationAdapter
 
@@ -36,8 +37,8 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         locationAdapter = LocationAdapter(this)
         rv_locations.adapter = locationAdapter
 
-        mLocationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
-        mLocationViewModel.allLocations?.observe(this, Observer<List<Location>> { locations ->
+        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+        locationViewModel.allLocations?.observe(this, Observer<List<Location>> { locations ->
             // Update the cached copy of the words in the adapter.
             locations?.run {
                 locationAdapter.dataList = locations
@@ -68,7 +69,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun addNewLocation(name: String, location: LatLng) {
-        mLocationViewModel.insert(Location(name, location))
+        locationViewModel.insert(Location(name, location))
     }
 
 
@@ -85,6 +86,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        AppDatabase.getInstance(applicationContext).close()
     }
 
 }

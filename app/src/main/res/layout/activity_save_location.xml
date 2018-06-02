@@ -20,6 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_location" />
+    <include layout="@layout/content_save_location" />
 
 </android.support.design.widget.CoordinatorLayout>

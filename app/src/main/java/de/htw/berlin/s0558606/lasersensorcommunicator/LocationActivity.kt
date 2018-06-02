@@ -2,23 +2,19 @@ package de.htw.berlin.s0558606.lasersensorcommunicator
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
-import com.google.android.gms.maps.model.LatLng
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.Measurement
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.MeasurementAdapter
-import kotlinx.android.synthetic.main.activity_location.*
-import kotlinx.android.synthetic.main.content_location.*
+import kotlinx.android.synthetic.main.activity_save_location.*
+import kotlinx.android.synthetic.main.content_save_location.*
 import org.jetbrains.anko.*
 
 class LocationActivity : AppCompatActivity(), AnkoLogger {
@@ -26,12 +22,12 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
     var locationID: Long = 0
     var locationName: String = ""
 
-    private lateinit var mMeasurementViewModel: MeasurementViewModel
+    private lateinit var measurementViewModel: MeasurementViewModel
     private lateinit var dataAdapter: MeasurementAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_location)
+        setContentView(R.layout.activity_save_location)
         setSupportActionBar(toolbar)
 
         if (savedInstanceState == null) {
@@ -43,8 +39,8 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
             dataAdapter = MeasurementAdapter(this)
             rv_measurements.adapter = dataAdapter
 
-            mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
-            mMeasurementViewModel.getMeasurementsByLocationID(locationID)?.observe(this, Observer<List<Measurement>> { data ->
+            measurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
+            measurementViewModel.getMeasurementsByLocationID(locationID)?.observe(this, Observer<List<Measurement>> { data ->
                 data?.run {
                     dataAdapter.dataList = data
                     dataAdapter.notifyDataSetChanged()
@@ -52,7 +48,6 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
             })
 
 
-            setSupportActionBar(findViewById(R.id.toolbar))
             supportActionBar?.title = locationName
 
 
@@ -65,7 +60,7 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun addNewMeasurement() {
-        mMeasurementViewModel.insert(Measurement(locationID = locationID))
+        measurementViewModel.insert(Measurement(locationID = locationID))
     }
 
     private fun showAddMeasurementDialog() {
@@ -89,7 +84,11 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
                 true
             }
             R.id.set_position -> {
-                startActivity<MapsActivity>()
+                val intent = Intent(applicationContext, SaveLocationActivity::class.java)
+
+                intent.putExtra(ARG_ITEM_ID, locationID)
+                intent.putExtra(ARG_ITEM_NAME, locationName)
+                ContextCompat.startActivity(applicationContext, intent, null)
                 true
             }
             else -> super.onOptionsItemSelected(item)
