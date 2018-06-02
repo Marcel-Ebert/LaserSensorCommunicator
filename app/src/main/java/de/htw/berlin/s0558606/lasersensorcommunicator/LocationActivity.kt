@@ -89,6 +89,7 @@ class LocationActivity : AppCompatActivity(), AnkoLogger {
                 true
             }
             R.id.set_position -> {
+                startActivity<MapsActivity>()
                 true
             }
             else -> super.onOptionsItemSelected(item)
