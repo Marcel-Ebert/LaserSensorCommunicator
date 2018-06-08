@@ -15,12 +15,19 @@ interface SensorDataDao {
     @Query("SELECT * FROM sensordata")
     fun getAllData(): LiveData<List<SensorData>>
 
+
+    @Query("SELECT * FROM sensordata")
+    fun getAllDataSynchronous(): List<SensorData>
+
     @Query("SELECT * FROM sensordata where id = :id")
     fun findDataById(id: Long): SensorData
 
 
     @Query("SELECT * FROM sensordata where measurement_id = :id order by timestamp desc")
     fun findDataByMeasurementId(id: Long): LiveData<List<SensorData>>
+
+    @Query("SELECT * FROM sensordata where measurement_id = :id order by timestamp desc")
+    fun findDataByMeasurementIdSynchronous(id: Long): List<SensorData>
 
     @Insert(onConflict = REPLACE)
     fun insertData(data: SensorData)

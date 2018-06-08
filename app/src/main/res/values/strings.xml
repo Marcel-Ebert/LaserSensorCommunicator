@@ -18,4 +18,5 @@
     <string name="title_activity_show_locations">Map</string>
     <string name="show_map">Show Map</string>
     <string name="show_on_map">Show on Map</string>
+    <string name="export_data">Export</string>
 </resources>
