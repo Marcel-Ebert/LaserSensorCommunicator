@@ -48,7 +48,17 @@
             android:theme="@style/MaterialTheme" />
         <activity
             android:name=".ShowLocationsActivity"
-            android:label="@string/title_activity_show_locations"></activity>
+            android:label="@string/title_activity_show_locations" />
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="de.htw.berlin.s0558606.lasersensorcommunicator.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
     </application>
 
 </manifest>

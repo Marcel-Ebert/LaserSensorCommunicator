@@ -25,7 +25,7 @@ public class CSVWriter {
 
     public static String getDatabaseContentAsCSV(Context context) {
 
-        File folder = new File(Environment.getExternalStorageDirectory() + "/Folder");
+        File folder = new File(context.getFilesDir() + "/Folder");
 
         boolean var = false;
         if (!folder.exists())
@@ -93,6 +93,7 @@ public class CSVWriter {
                     fw.append(value);
                     fw.append(",");
                 }
+                fw.append("\n");
             }
 
             // fw.flush();

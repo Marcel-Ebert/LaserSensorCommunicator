@@ -1,5 +1,6 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator
 
+import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
@@ -23,6 +24,10 @@ import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.sdk21.coroutines.onClick
 import java.io.File
 import android.os.StrictMode
+import android.support.v4.app.ActivityCompat
+import android.widget.Toast
+import android.content.pm.PackageManager
+import android.support.v4.content.FileProvider
 
 
 
@@ -110,17 +115,38 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun exportData() {
-        val fileLocation = File(Environment.getExternalStorageDirectory().absolutePath,
-                CSVWriter.getDatabaseContentAsCSV(applicationContext))
+        ActivityCompat.requestPermissions(this, listOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
 
-        val path = Uri.fromFile(fileLocation)
-        val emailIntent = Intent(Intent.ACTION_SEND)
-        emailIntent.data = Uri.parse("mailto:")
-        emailIntent.type = "text/plain"
-        emailIntent.putExtra(Intent.EXTRA_STREAM, path)
-        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SensorData")
+    }
 
-        startActivity(Intent.createChooser(emailIntent, "Send email..."))
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        when (requestCode) {
+            1 -> {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    val fileLocation = File("", CSVWriter.getDatabaseContentAsCSV(applicationContext))
+
+                    val path = FileProvider.getUriForFile(applicationContext, "de.htw.berlin.s0558606.lasersensorcommunicator.fileprovider", fileLocation)
+
+                    val emailIntent = Intent(Intent.ACTION_SEND)
+                    emailIntent.data = Uri.parse("mailto:")
+                    emailIntent.type = "text/plain"
+
+                    emailIntent.putExtra(Intent.EXTRA_STREAM, path)
+                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SensorData")
+
+                    startActivity(Intent.createChooser(emailIntent, "Send email..."))
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this@MainActivity, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+        }// other 'case' lines to check for other
+        // permissions this app might request
     }
 
     override fun onDestroy() {
