@@ -28,8 +28,7 @@ import android.support.v4.app.ActivityCompat
 import android.widget.Toast
 import android.content.pm.PackageManager
 import android.support.v4.content.FileProvider
-
-
+import android.view.View
 
 
 const val ARG_ITEM_ID = "item_id"
@@ -125,23 +124,34 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    val fileLocation = File("", CSVWriter.getDatabaseContentAsCSV(applicationContext))
 
-                    val path = FileProvider.getUriForFile(applicationContext, "de.htw.berlin.s0558606.lasersensorcommunicator.fileprovider", fileLocation)
+                    pb_export_data.visibility = View.VISIBLE
+                    doAsync {
+                        val filePathString = CSVWriter.getDatabaseContentAsCSV(applicationContext)
 
-                    val emailIntent = Intent(Intent.ACTION_SEND)
-                    emailIntent.data = Uri.parse("mailto:")
-                    emailIntent.type = "text/plain"
+                        val fileLocation = File("", filePathString)
 
-                    emailIntent.putExtra(Intent.EXTRA_STREAM, path)
-                    emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SensorData")
+                        val path = FileProvider.getUriForFile(applicationContext, "de.htw.berlin.s0558606.lasersensorcommunicator.fileprovider", fileLocation)
 
-                    startActivity(Intent.createChooser(emailIntent, "Send email..."))
+                        val emailIntent = Intent(Intent.ACTION_SEND)
+                        emailIntent.data = Uri.parse("mailto:")
+                        emailIntent.type = "text/plain"
+
+                        emailIntent.putExtra(Intent.EXTRA_STREAM, path)
+                        emailIntent.putExtra(Intent.EXTRA_SUBJECT, "SensorData")
+
+                        uiThread {
+                            pb_export_data.visibility = View.INVISIBLE
+                            startActivity(Intent.createChooser(emailIntent, "Send collected sensordata as .csv ..."))
+
+                        }
+                    }
+
                 } else {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this@MainActivity, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(applicationContext, "Permission denied to read your External storage", Toast.LENGTH_SHORT).show()
                 }
                 return
             }
