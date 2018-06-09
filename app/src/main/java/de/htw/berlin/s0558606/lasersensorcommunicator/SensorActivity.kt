@@ -9,6 +9,8 @@ import android.os.IBinder
 import android.os.Message
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
@@ -16,7 +18,7 @@ import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorDataViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.serial.UsbService
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.SensorDataAdapter
-import kotlinx.android.synthetic.main.content_usb.*
+import kotlinx.android.synthetic.main.content_sensor.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.sdk21.coroutines.onClick
 import org.jetbrains.anko.toast
@@ -24,7 +26,7 @@ import org.jetbrains.anko.warn
 
 class SensorActivity : AppCompatActivity(), AnkoLogger {
 
-    private val mUsbReceiver = object : BroadcastReceiver() {
+    private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
 //                UsbService.ACTION_USB_PERMISSION_GRANTED
@@ -44,7 +46,7 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
     private val usbConnection = object : ServiceConnection {
         override fun onServiceConnected(arg0: ComponentName, arg1: IBinder) {
             usbService = (arg1 as UsbService.UsbBinder).service
-            usbService?.setHandler(mHandler)
+            usbService?.setHandler(handler)
         }
 
         override fun onServiceDisconnected(arg0: ComponentName) {
@@ -53,39 +55,42 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private var usbService: UsbService? = null
-    private lateinit var mHandler: MyHandler
+    private lateinit var handler: MyHandler
 
     private var serviceRunning: Boolean = false
 
-    private lateinit var mSensorDataViewModel: SensorDataViewModel
-    private lateinit var mMeasurementViewModel: MeasurementViewModel
+    private var collectingInterval = 1
+    private var counter = 0
+
+    private lateinit var sensorDataViewModel: SensorDataViewModel
+    private lateinit var measurementViewModel: MeasurementViewModel
     private lateinit var dataAdapter: SensorDataAdapter
 
     private var measurementID: Long = 0
 
-    private lateinit var mService: Intent
+    private lateinit var serviceIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_usb)
+        setContentView(R.layout.activity_sensor)
 
-        mHandler = MyHandler(this)
+        handler = MyHandler(this)
 
         btn_start.onClick {
             setFilters()
             startService(UsbService::class.java, usbConnection, null)
             serviceRunning = true
-            btn_stop.apply { visibility = View.VISIBLE }
-            btn_start.apply { visibility = View.INVISIBLE }
+            btn_stop.visibility = View.VISIBLE
+            btn_start.visibility = View.INVISIBLE
         }
         btn_stop.onClick {
-            unregisterReceiver(mUsbReceiver)
-            stopService(mService)
+            unregisterReceiver(usbReceiver)
+            stopService(serviceIntent)
             unbindService(usbConnection)
             serviceRunning = false
 
-            btn_start.apply { visibility = View.VISIBLE }
-            btn_stop.apply { visibility = View.INVISIBLE }
+            btn_start.visibility = View.VISIBLE
+            btn_stop.visibility = View.INVISIBLE
 
         }
 
@@ -94,44 +99,41 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             if (serviceRunning)
                 btn_stop.performClick()
 
-            var list = dataAdapter.dataList
-            if (list?.isNotEmpty()) {
-                val end = list?.get(0)?.timestamp
-                val start = list?.get(list.lastIndex)?.timestamp
-
-                // calculate average values
-                var averagePM25: Double = 0.0
-                var averagePM10: Double = 0.0
-
-                list.forEach {
-                    averagePM25 = averagePM25.plus(it.pm25.toDouble())
-                    averagePM10 = averagePM10.plus(it.pm10.toDouble())
-                }
-                averagePM25 /= list.size
-                averagePM10 /= list.size
-
-                var measurement = mMeasurementViewModel.getMeasurementByID(measurementID)
-                measurement.start = start!!
-                measurement.end = end!!
-                measurement.pm10 = averagePM10.toString()
-                measurement.pm25 = averagePM25.toString()
-                mMeasurementViewModel.insert(measurement)
-            }
+            calculateAndInsertDataToDB()
             // exit here
             finish()
         }
 
+        et_interval.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                val input = s.toString()
+                try {
+                    collectingInterval = input.toInt()
+                    counter = collectingInterval
+                } catch (e: NumberFormatException) {
+                }
+            }
+        })
+
         if (savedInstanceState == null) {
             measurementID = intent.extras.getLong(ARG_ITEM_ID)
-            warn { "LocationID = ${measurementID}" }
+            warn { "MeasurementID = ${measurementID}" }
 
             dataAdapter = SensorDataAdapter(this)
             rv_sensor_items.adapter = dataAdapter
 
-            mMeasurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
+            measurementViewModel = ViewModelProviders.of(this).get(MeasurementViewModel::class.java)
 
-            mSensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
-            mSensorDataViewModel.getDataByMeasurementID(measurementID)?.observe(this, Observer<List<SensorData>> { data ->
+            sensorDataViewModel = ViewModelProviders.of(this).get(SensorDataViewModel::class.java)
+            sensorDataViewModel.getDataByMeasurementID(measurementID)?.observe(this, Observer<List<SensorData>> { data ->
                 // Update the cached copy of the words in the adapter.
                 data?.run {
                     dataAdapter.dataList = data
@@ -150,35 +152,69 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
         }
     }
 
+    private fun calculateAndInsertDataToDB() {
+        var list = dataAdapter.dataList
+        if (list?.isNotEmpty()) {
+            val end = list?.get(0)?.timestamp
+            val start = list?.get(list.lastIndex)?.timestamp
+
+            // calculate average values
+            var averagePM25: Double = 0.0
+            var averagePM10: Double = 0.0
+
+            list.forEach {
+                averagePM25 = averagePM25.plus(it.pm25.toDouble())
+                averagePM10 = averagePM10.plus(it.pm10.toDouble())
+            }
+            averagePM25 /= list.size
+            averagePM10 /= list.size
+
+            var measurement = measurementViewModel.getMeasurementByID(measurementID)
+            measurement.start = start!!
+            measurement.end = end!!
+            measurement.pm10 = averagePM10.toString()
+            measurement.pm25 = averagePM25.toString()
+            measurementViewModel.insert(measurement)
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         try {
-            stopService(mService)
+            stopService(serviceIntent)
             unbindService(usbConnection)
-            unregisterReceiver(mUsbReceiver)
+            unregisterReceiver(usbReceiver)
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun addNewSensorData(data: SensorData) {
+    private fun notifyNewData(data: SensorData) {
+        counter++
+        if (counter / collectingInterval >= 1) {
+            counter = 0
+            saveNewData(data)
+        }
+    }
+
+    private fun saveNewData(data: SensorData) {
         if (data.initializedCorrectly) {
             data.measurementID = measurementID
-            mSensorDataViewModel.insert(data)
+            sensorDataViewModel.insert(data)
         }
     }
 
     private fun startService(service: Class<*>, serviceConnection: ServiceConnection, extras: Bundle?) {
         if (!UsbService.SERVICE_CONNECTED) {
-            mService = Intent(this, service)
+            serviceIntent = Intent(this, service)
             if (extras != null && !extras.isEmpty) {
                 val keys = extras.keySet()
                 for (key in keys) {
                     val extra = extras.getString(key)
-                    mService.putExtra(key, extra)
+                    serviceIntent.putExtra(key, extra)
                 }
             }
-            startService(mService)
+            startService(serviceIntent)
 
             val bindingIntent = Intent(this, service)
             bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE)
@@ -192,23 +228,24 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
         filter.addAction(UsbService.ACTION_USB_DISCONNECTED)
         filter.addAction(UsbService.ACTION_USB_NOT_SUPPORTED)
         filter.addAction(UsbService.ACTION_USB_PERMISSION_NOT_GRANTED)
-        registerReceiver(mUsbReceiver, filter)
+        registerReceiver(usbReceiver, filter)
     }
 
     /*
      * This handler will be passed to UsbService. Data received from serial port is displayed through this handler
      */
     private class MyHandler(activity: SensorActivity) : Handler(), AnkoLogger {
-        private val mActivity: SensorActivity = activity
+        private val activity: SensorActivity = activity
 
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                UsbService.MESSAGE_FROM_SERIAL_PORT ->
-                    mActivity.addNewSensorData(SensorData(msg.obj as ByteArray))
+                UsbService.MESSAGE_FROM_SERIAL_PORT -> {
+                    activity.notifyNewData(SensorData(msg.obj as ByteArray))
+                }
                 UsbService.CTS_CHANGE ->
-                    Toast.makeText(mActivity, "CTS_CHANGE", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "CTS_CHANGE", Toast.LENGTH_LONG).show()
                 UsbService.DSR_CHANGE ->
-                    Toast.makeText(mActivity, "DSR_CHANGE", Toast.LENGTH_LONG).show()
+                    Toast.makeText(activity, "DSR_CHANGE", Toast.LENGTH_LONG).show()
 
             }
         }

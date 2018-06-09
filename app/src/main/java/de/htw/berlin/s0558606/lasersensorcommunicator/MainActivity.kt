@@ -41,16 +41,11 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     private lateinit var locationAdapter: LocationAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
-
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val builder = StrictMode.VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
-
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.title = getString(R.string.title_activity_main)
-
 
         locationAdapter = LocationAdapter(this)
         rv_locations.adapter = locationAdapter
@@ -114,7 +109,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun exportData() {
-        ActivityCompat.requestPermissions(this, listOf<String>(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
+        ActivityCompat.requestPermissions(this, listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE).toTypedArray(), 1)
 
     }
 

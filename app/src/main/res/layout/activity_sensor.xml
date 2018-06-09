@@ -20,6 +20,6 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_usb" />
+    <include layout="@layout/content_sensor" />
 
 </android.support.design.widget.CoordinatorLayout>

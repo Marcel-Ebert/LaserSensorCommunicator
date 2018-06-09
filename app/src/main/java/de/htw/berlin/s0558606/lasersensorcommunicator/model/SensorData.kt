@@ -13,7 +13,7 @@ import java.util.*
  */
 
 @Entity(tableName = "sensordata", foreignKeys = [
-    (ForeignKey(entity = Location::class,
+    (ForeignKey(entity = Measurement::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("measurement_id"),
             onDelete = CASCADE))])
