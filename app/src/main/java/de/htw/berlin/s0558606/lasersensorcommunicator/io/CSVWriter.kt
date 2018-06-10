@@ -11,21 +11,25 @@ import java.util.*
  */
 object CSVWriter {
 
-    fun getDatabaseContentAsCSV(context: Context): String {
+    fun getDatabaseContentCSVFileName(context: Context): String {
 
-        val folder = File(context.filesDir.toString() + "/SensorData")
+        val folderPath = getFolderPath(context)
+        val fileName = "$folderPath/sensordata.csv"
 
-        var created = false
-        if (!folder.exists())
-            created = folder.mkdir()
+        val databaseContentLists = getListOfDatabaseObjects(context)
 
-        println("Folder created = $created")
-
-        val fileName = folder.toString() + "/" + "sensordata.csv"
-
-        createFileFromLists(getListOfDatabaseObjects(context), fileName)
+        tryWriteFileFromLists(databaseContentLists, fileName)
 
         return fileName
+    }
+
+    private fun getFolderPath(context: Context): String {
+        val folder = File(context.filesDir.toString() + "/SensorData")
+
+        if (!folder.exists())
+            folder.mkdir()
+
+        return folder.toString()
     }
 
     private fun getListOfDatabaseObjects(context: Context): List<List<String>> {
@@ -56,7 +60,7 @@ object CSVWriter {
 
     }
 
-    private fun createFileFromLists(superList: List<List<String>>, fileName: String) {
+    private fun tryWriteFileFromLists(superList: List<List<String>>, fileName: String) {
         try {
             val fw = FileWriter(fileName)
 
@@ -91,7 +95,6 @@ object CSVWriter {
                 fw.append("\n")
             }
 
-            // fw.flush();
             fw.close()
 
         } catch (e: Exception) {
