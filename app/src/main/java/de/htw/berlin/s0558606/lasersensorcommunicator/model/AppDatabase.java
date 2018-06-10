@@ -15,7 +15,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase sInstance;
 
-    abstract public LocationDao locationDao();
+    abstract public MeasuringLocationDao locationDao();
 
     abstract public SensorDataDao sensorDataDao();
 

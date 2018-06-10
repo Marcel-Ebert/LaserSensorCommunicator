@@ -32,10 +32,10 @@ internal constructor(application: Application) {
         return sensorDataDao?.findDataByMeasurementId(id)!!
     }
 
-    private class insertAsyncTask internal constructor(private val mAsyncTaskDao: SensorDataDao) : AsyncTask<SensorData, Void, Void>() {
+    private class insertAsyncTask internal constructor(private val asyncTaskDao: SensorDataDao) : AsyncTask<SensorData, Void, Void>() {
 
         override fun doInBackground(vararg params: SensorData): Void? {
-            mAsyncTaskDao.insertData(params[0])
+            asyncTaskDao.insertData(params[0])
             return null
         }
     }

@@ -4,30 +4,30 @@ import android.app.Application
 import android.arch.lifecycle.AndroidViewModel
 import android.arch.lifecycle.LiveData
 
-class LocationViewModel(application: Application) : AndroidViewModel(application) {
+class MeasuringLocationViewModel(application: Application) : AndroidViewModel(application) {
 
     val allLocations: LiveData<List<MeasuringLocation>>
 
-    private val mRepository: LocationRepository = LocationRepository(application)
+    private val repository: MeasuringLocationRepository = MeasuringLocationRepository(application)
 
     init {
-        allLocations = mRepository.allLocations
+        allLocations = repository.allLocations
     }
 
     fun getAllLocationsSynchronous(): List<MeasuringLocation> {
-        return mRepository.getAllLocationsSynchronous()
+        return repository.getAllLocationsSynchronous()
     }
 
     fun insert(location: MeasuringLocation) {
-        mRepository.insert(location)
+        repository.insert(location)
     }
 
     fun delete(location: MeasuringLocation) {
-        mRepository.delete(location)
+        repository.delete(location)
     }
 
     fun findLocationById(id: Long): MeasuringLocation {
-        return mRepository.findLocationById(id)
+        return repository.findLocationById(id)
     }
 
 }

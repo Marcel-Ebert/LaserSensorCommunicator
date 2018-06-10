@@ -4,30 +4,28 @@ import android.Manifest
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.FileProvider
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.EditText
-import com.google.android.gms.maps.model.LatLng
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.AppDatabase
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
-import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
-import de.htw.berlin.s0558606.lasersensorcommunicator.io.CSVWriter
-import java.io.File
-import android.support.v4.app.ActivityCompat
-import android.widget.Toast
-import android.content.pm.PackageManager
-import android.support.v4.content.FileProvider
 import android.view.View
-import kotlinx.android.synthetic.main.content_main.rv_locations
-import kotlinx.android.synthetic.main.content_main.btn_show_locations
-import kotlinx.android.synthetic.main.content_main.pb_export_data
+import android.widget.EditText
+import android.widget.Toast
+import com.google.android.gms.maps.model.LatLng
+import de.htw.berlin.s0558606.lasersensorcommunicator.io.CSVWriter
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.AppDatabase
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
+import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
+import kotlinx.android.synthetic.main.content_main.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk21.coroutines.onClick
+import java.io.File
 
 
 const val ARG_ITEM_ID = "item_id"
@@ -37,7 +35,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
 
     private val REQUEST_PERMISSION_WRITE_STORAGE = 1000
 
-    private lateinit var locationViewModel: LocationViewModel
+    private lateinit var measuringLocationViewModel: MeasuringLocationViewModel
 
     private lateinit var locationAdapter: LocationAdapter
 
@@ -51,8 +49,8 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         locationAdapter = LocationAdapter(this)
         rv_locations.adapter = locationAdapter
 
-        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
-        locationViewModel.allLocations?.observe(this, Observer<List<MeasuringLocation>> { locations ->
+        measuringLocationViewModel = ViewModelProviders.of(this).get(MeasuringLocationViewModel::class.java)
+        measuringLocationViewModel.allLocations?.observe(this, Observer<List<MeasuringLocation>> { locations ->
             // Update the cached copy of the words in the adapter.
             locations?.run {
                 locationAdapter.dataList = locations
@@ -86,7 +84,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun addNewLocation(name: String, location: LatLng) {
-        locationViewModel.insert(MeasuringLocation(name, location))
+        measuringLocationViewModel.insert(MeasuringLocation(name, location))
     }
 
 

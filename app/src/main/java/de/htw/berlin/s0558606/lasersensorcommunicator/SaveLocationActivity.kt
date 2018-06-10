@@ -20,7 +20,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocationViewModel
 import kotlinx.android.synthetic.main.activity_save_location.*
 import kotlinx.android.synthetic.main.content_save_location.*
 import org.jetbrains.anko.sdk21.coroutines.onClick
@@ -46,7 +46,7 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var locationID: Long = 0
     private lateinit var locationName: String
-    private lateinit var locationViewModel: LocationViewModel
+    private lateinit var measuringLocationViewModel: MeasuringLocationViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,19 +72,18 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Build the map.
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map) as SupportMapFragment
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+        measuringLocationViewModel = ViewModelProviders.of(this).get(MeasuringLocationViewModel::class.java)
 
 
         btn_save_location.onClick {
-            val location = locationViewModel.findLocationById(locationID)
+            val location = measuringLocationViewModel.findLocationById(locationID)
             val targetlocation = LatLng(lastKnownLocation?.latitude
                     ?: 0.0, lastKnownLocation?.longitude ?: 0.0)
             location.location = targetlocation
-            locationViewModel.insert(location)
+            measuringLocationViewModel.insert(location)
             toast("Location saved!")
         }
 

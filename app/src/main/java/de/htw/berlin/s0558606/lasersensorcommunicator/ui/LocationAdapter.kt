@@ -8,11 +8,10 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import de.htw.berlin.s0558606.lasersensorcommunicator.*
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.location_list_item.*
-import kotlinx.android.synthetic.main.measurement_list_item.*
 import org.jetbrains.anko.AnkoLogger
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.warn
@@ -24,7 +23,7 @@ import org.jetbrains.anko.warn
 class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
 
     var dataList: List<MeasuringLocation> = listOf()
-    val locationViewModel = ViewModelProviders.of(context).get(LocationViewModel::class.java)
+    val locationViewModel = ViewModelProviders.of(context).get(MeasuringLocationViewModel::class.java)
 
 
     private val clickListener = View.OnClickListener { view ->

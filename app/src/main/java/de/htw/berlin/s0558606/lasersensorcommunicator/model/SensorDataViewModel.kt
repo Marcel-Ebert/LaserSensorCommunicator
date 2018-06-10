@@ -8,22 +8,22 @@ class SensorDataViewModel(application: Application) : AndroidViewModel(applicati
 
     val allData: LiveData<List<SensorData>>
 
-    private val mRepository: SensorDataRepository = SensorDataRepository(application)
+    private val repository: SensorDataRepository = SensorDataRepository(application)
 
     init {
-        allData = mRepository.allData
+        allData = repository.allData
     }
 
     fun insert(data: SensorData) {
-        mRepository.insert(data)
+        repository.insert(data)
     }
 
     fun delete(data: SensorData) {
-        mRepository.delete(data)
+        repository.delete(data)
     }
 
     fun getDataByMeasurementID(id: Long): LiveData<List<SensorData>> {
-        return mRepository.getDataByMeasurementID(id)
+        return repository.getDataByMeasurementID(id)
     }
 
 }

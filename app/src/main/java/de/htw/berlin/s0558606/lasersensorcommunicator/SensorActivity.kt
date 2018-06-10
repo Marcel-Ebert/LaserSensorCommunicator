@@ -174,7 +174,7 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             measurement.end = end!!
             measurement.pm10 = averagePM10.toString()
             measurement.pm25 = averagePM25.toString()
-            measurementViewModel.insert(measurement)
+            measurementViewModel.update(measurement)
         }
     }
 

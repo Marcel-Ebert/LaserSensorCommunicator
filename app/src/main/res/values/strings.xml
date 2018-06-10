@@ -2,7 +2,7 @@
     <string name="app_name">LaserSensorCommunicator</string>
 
     <string name="title_activity_maps">Map</string>
-    <string name="title_activity_main">Home</string>
+    <string name="title_activity_main">Measuring Locations</string>
     <string name="title_activity_usb">USB Serial Reader</string>
     <string name="title_activity_location">LocationActivity</string>
     <string name="add_location">Add location</string>

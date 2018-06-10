@@ -9,7 +9,7 @@ import android.arch.persistence.room.OnConflictStrategy.REPLACE
  */
 
 @Dao
-interface LocationDao {
+interface MeasuringLocationDao {
 
     @Query("SELECT * FROM measuring_location")
     fun getAllLocations(): LiveData<List<MeasuringLocation>>

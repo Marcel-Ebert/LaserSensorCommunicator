@@ -8,26 +8,30 @@ class MeasurementViewModel(application: Application) : AndroidViewModel(applicat
 
     val allMeasurements: LiveData<List<Measurement>>
 
-    private val mRepository: MeasurementRepository = MeasurementRepository(application)
+    private val repository: MeasurementRepository = MeasurementRepository(application)
 
     init {
-        allMeasurements = mRepository.allMeasurements
+        allMeasurements = repository.allMeasurements
     }
 
     fun insert(measurement: Measurement) {
-        mRepository.insert(measurement)
+        repository.insert(measurement)
+    }
+
+    fun update(measurement: Measurement){
+        repository.update(measurement)
     }
 
     fun delete(measurement: Measurement) {
-        mRepository.delete(measurement)
+        repository.delete(measurement)
     }
 
     fun getMeasurementByID(id: Long): Measurement {
-        return mRepository.getMeasurementID(id)
+        return repository.getMeasurementID(id)
     }
 
     fun getMeasurementsByLocationID(id: Long): LiveData<List<Measurement>> {
-        return mRepository.getMeasurementsByLocationID(id)
+        return repository.getMeasurementsByLocationID(id)
     }
 
 }

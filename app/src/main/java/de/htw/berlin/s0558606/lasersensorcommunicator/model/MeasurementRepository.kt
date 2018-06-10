@@ -24,6 +24,10 @@ internal constructor(application: Application) {
         insertAsyncTask(measurementDao!!).execute(item)
     }
 
+    fun update(item: Measurement) {
+        updateAsyncTask(measurementDao!!).execute(item)
+    }
+
     fun delete(item: Measurement){
         measurementDao?.deleteMeasurement(item)
     }
@@ -36,10 +40,18 @@ internal constructor(application: Application) {
         return measurementDao?.findMeasurementById(id)!!
     }
 
-    private class insertAsyncTask internal constructor(private val mAsyncTaskDao: MeasurementDao) : AsyncTask<Measurement, Void, Void>() {
+    private class insertAsyncTask internal constructor(private val asyncTaskDao: MeasurementDao) : AsyncTask<Measurement, Void, Void>() {
 
         override fun doInBackground(vararg params: Measurement): Void? {
-            mAsyncTaskDao.insertMeasurement(params[0])
+            asyncTaskDao.insertMeasurement(params[0])
+            return null
+        }
+    }
+
+    private class updateAsyncTask internal constructor(private val asyncTaskDao: MeasurementDao) : AsyncTask<Measurement, Void, Void>() {
+
+        override fun doInBackground(vararg params: Measurement): Void? {
+            asyncTaskDao.updateMeasurement(params[0])
             return null
         }
     }

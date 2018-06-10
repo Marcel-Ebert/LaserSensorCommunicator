@@ -8,7 +8,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.MarkerOptions
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
 import org.jetbrains.anko.startActivity
 
@@ -16,7 +16,7 @@ class ShowLocationsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var map: GoogleMap
 
-    private lateinit var locationViewModel: LocationViewModel
+    private lateinit var measuringLocationViewModel: MeasuringLocationViewModel
 
     private var showOnlyOneLocation: Boolean = false
     private lateinit var location: MeasuringLocation
@@ -38,12 +38,12 @@ class ShowLocationsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
+        measuringLocationViewModel = ViewModelProviders.of(this).get(MeasuringLocationViewModel::class.java)
 
         if (intent.extras != null) {
             showOnlyOneLocation = true
             val id = intent.getLongExtra(ARG_ITEM_ID, 0)
-            location = locationViewModel.findLocationById(id)
+            location = measuringLocationViewModel.findLocationById(id)
 
         }
 
@@ -74,7 +74,7 @@ class ShowLocationsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun addLocationsToMap() {
-        val list = locationViewModel.getAllLocationsSynchronous()
+        val list = measuringLocationViewModel.getAllLocationsSynchronous()
 
         list.forEach {
             map.addMarker(MarkerOptions().position(it.location).title(it.name)).tag = it.id
