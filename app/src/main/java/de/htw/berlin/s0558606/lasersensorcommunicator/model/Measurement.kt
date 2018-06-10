@@ -1,7 +1,6 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator.model
 
 import android.arch.persistence.room.*
-import com.google.android.gms.maps.model.LatLng
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -10,7 +9,7 @@ import java.util.*
  */
 
 @Entity(tableName = "measurement", foreignKeys = [
-    (ForeignKey(entity = Location::class,
+    (ForeignKey(entity = MeasuringLocation::class,
             parentColumns = arrayOf("id"),
             childColumns = arrayOf("location_id"),
             onDelete = ForeignKey.CASCADE))])

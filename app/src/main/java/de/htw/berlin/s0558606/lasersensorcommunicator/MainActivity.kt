@@ -13,19 +13,21 @@ import android.view.MenuItem
 import android.widget.EditText
 import com.google.android.gms.maps.model.LatLng
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.AppDatabase
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.ui.LocationAdapter
-import org.jetbrains.anko.*
 import de.htw.berlin.s0558606.lasersensorcommunicator.io.CSVWriter
-import kotlinx.android.synthetic.main.content_main.*
-import org.jetbrains.anko.sdk21.coroutines.onClick
 import java.io.File
 import android.support.v4.app.ActivityCompat
 import android.widget.Toast
 import android.content.pm.PackageManager
 import android.support.v4.content.FileProvider
 import android.view.View
+import kotlinx.android.synthetic.main.content_main.rv_locations
+import kotlinx.android.synthetic.main.content_main.btn_show_locations
+import kotlinx.android.synthetic.main.content_main.pb_export_data
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
+import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk21.coroutines.onClick
 
 
 const val ARG_ITEM_ID = "item_id"
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
         rv_locations.adapter = locationAdapter
 
         locationViewModel = ViewModelProviders.of(this).get(LocationViewModel::class.java)
-        locationViewModel.allLocations?.observe(this, Observer<List<Location>> { locations ->
+        locationViewModel.allLocations?.observe(this, Observer<List<MeasuringLocation>> { locations ->
             // Update the cached copy of the words in the adapter.
             locations?.run {
                 locationAdapter.dataList = locations
@@ -84,7 +86,7 @@ class MainActivity : AppCompatActivity(), AnkoLogger {
     }
 
     private fun addNewLocation(name: String, location: LatLng) {
-        locationViewModel.insert(Location(name, location))
+        locationViewModel.insert(MeasuringLocation(name, location))
     }
 
 

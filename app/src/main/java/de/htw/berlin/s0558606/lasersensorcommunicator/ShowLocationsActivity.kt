@@ -1,17 +1,15 @@
 package de.htw.berlin.s0558606.lasersensorcommunicator
 
 import android.arch.lifecycle.ViewModelProviders
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-
+import android.support.v7.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
 import org.jetbrains.anko.startActivity
 
 class ShowLocationsActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -21,7 +19,7 @@ class ShowLocationsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var locationViewModel: LocationViewModel
 
     private var showOnlyOneLocation: Boolean = false
-    private lateinit var location: Location
+    private lateinit var location: MeasuringLocation
 
     companion object {
 

@@ -8,8 +8,8 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import de.htw.berlin.s0558606.lasersensorcommunicator.*
-import de.htw.berlin.s0558606.lasersensorcommunicator.model.Location
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.LocationViewModel
+import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasuringLocation
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.location_list_item.*
 import kotlinx.android.synthetic.main.measurement_list_item.*
@@ -23,12 +23,12 @@ import org.jetbrains.anko.warn
  */
 class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<LocationAdapter.LocationViewHolder>(), AnkoLogger {
 
-    var dataList: List<Location> = listOf()
+    var dataList: List<MeasuringLocation> = listOf()
     val locationViewModel = ViewModelProviders.of(context).get(LocationViewModel::class.java)
 
 
     private val clickListener = View.OnClickListener { view ->
-        val item = view.tag as Location
+        val item = view.tag as MeasuringLocation
         warn { "Clicked on Location: $item" }
 
         val intent = Intent(view.context, LocationActivity::class.java)
@@ -38,12 +38,12 @@ class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<Loc
     }
 
     private val longClickListener = View.OnLongClickListener { view ->
-        val item = view.tag as Location
+        val item = view.tag as MeasuringLocation
         showDeleteLocationDialog(item)
         true
     }
 
-    private fun showDeleteLocationDialog(item: Location) {
+    private fun showDeleteLocationDialog(item: MeasuringLocation) {
         context.alert {
             title = "Delete this Location?"
             positiveButton(context.getString(android.R.string.yes)) { deleteLocation(item) }
@@ -51,7 +51,7 @@ class LocationAdapter(val context: AppCompatActivity) : RecyclerView.Adapter<Loc
         }.show()
     }
 
-    private fun deleteLocation(item: Location) {
+    private fun deleteLocation(item: MeasuringLocation) {
         locationViewModel.delete(item)
         warn { "Deleted Location: $item" }
     }

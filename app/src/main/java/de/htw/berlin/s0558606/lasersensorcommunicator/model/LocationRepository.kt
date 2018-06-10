@@ -12,7 +12,7 @@ class LocationRepository
 internal constructor(application: Application) {
 
     private val locationDao: LocationDao?
-    val allLocations: LiveData<List<Location>>
+    val allLocations: LiveData<List<MeasuringLocation>>
 
     init {
         val db = AppDatabase.getInstance(application)
@@ -20,32 +20,32 @@ internal constructor(application: Application) {
         allLocations = locationDao.getAllLocations()
     }
 
-    fun getAllLocationsSynchronous(): List<Location> {
+    fun getAllLocationsSynchronous(): List<MeasuringLocation> {
         return locationDao!!.getAllLocationsSynchronous()
     }
 
-    fun insert(item: Location) {
+    fun insert(item: MeasuringLocation) {
         insertAsyncTask(locationDao!!).execute(item)
     }
 
-    fun delete(item: Location) {
+    fun delete(item: MeasuringLocation) {
         locationDao?.deleteLocation(item)
     }
 
-    fun findLocationById(id: Long): Location {
+    fun findLocationById(id: Long): MeasuringLocation {
         return locationDao?.findLocationById(id)!!
     }
 
-    private class insertAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Location, Void, Void>() {
+    private class insertAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<MeasuringLocation, Void, Void>() {
 
-        override fun doInBackground(vararg params: Location): Void? {
+        override fun doInBackground(vararg params: MeasuringLocation): Void? {
             mAsyncTaskDao.insertLocation(params[0])
             return null
         }
     }
 
-    private class findLocationAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Long, Void, Location>() {
-        override fun doInBackground(vararg params: Long?): Location {
+    private class findLocationAsyncTask internal constructor(private val mAsyncTaskDao: LocationDao) : AsyncTask<Long, Void, MeasuringLocation>() {
+        override fun doInBackground(vararg params: Long?): MeasuringLocation {
             return mAsyncTaskDao.findLocationById(params[0]!!)
         }
 

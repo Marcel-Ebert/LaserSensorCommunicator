@@ -3,7 +3,6 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
-import io.reactivex.Flowable
 
 /**
  * Created by Marcel Ebert S0558606 on 19.05.18.
@@ -12,21 +11,21 @@ import io.reactivex.Flowable
 @Dao
 interface LocationDao {
 
-    @Query("SELECT * FROM location")
-    fun getAllLocations(): LiveData<List<Location>>
+    @Query("SELECT * FROM measuring_location")
+    fun getAllLocations(): LiveData<List<MeasuringLocation>>
 
-    @Query("SELECT * FROM location")
-    fun getAllLocationsSynchronous(): List<Location>
+    @Query("SELECT * FROM measuring_location")
+    fun getAllLocationsSynchronous(): List<MeasuringLocation>
 
-    @Query("SELECT * FROM location where id = :id")
-    fun findLocationById(id: Long): Location
+    @Query("SELECT * FROM measuring_location where id = :id")
+    fun findLocationById(id: Long): MeasuringLocation
 
     @Insert(onConflict = REPLACE)
-    fun insertLocation(location: Location)
+    fun insertLocation(location: MeasuringLocation)
 
     @Update(onConflict = REPLACE)
-    fun updateLocation(location: Location)
+    fun updateLocation(location: MeasuringLocation)
 
     @Delete
-    fun deleteLocation(location: Location)
+    fun deleteLocation(location: MeasuringLocation)
 }
