@@ -2,6 +2,7 @@ package de.htw.berlin.s0558606.lasersensorcommunicator.model
 
 import android.arch.lifecycle.LiveData
 import android.arch.persistence.room.*
+import android.arch.persistence.room.OnConflictStrategy.IGNORE
 import android.arch.persistence.room.OnConflictStrategy.REPLACE
 
 /**
@@ -20,7 +21,7 @@ interface MeasuringLocationDao {
     @Query("SELECT * FROM measuring_location where id = :id")
     fun findLocationById(id: Long): MeasuringLocation
 
-    @Insert(onConflict = REPLACE)
+    @Insert(onConflict = IGNORE)
     fun insertLocation(location: MeasuringLocation)
 
     @Update(onConflict = REPLACE)

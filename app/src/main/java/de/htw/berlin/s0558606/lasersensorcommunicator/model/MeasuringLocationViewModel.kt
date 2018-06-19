@@ -22,6 +22,10 @@ class MeasuringLocationViewModel(application: Application) : AndroidViewModel(ap
         repository.insert(location)
     }
 
+    fun update(location: MeasuringLocation) {
+        repository.update(location)
+    }
+
     fun delete(location: MeasuringLocation) {
         repository.delete(location)
     }

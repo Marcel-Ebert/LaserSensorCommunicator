@@ -83,7 +83,7 @@ class SaveLocationActivity : AppCompatActivity(), OnMapReadyCallback {
             val targetlocation = LatLng(lastKnownLocation?.latitude
                     ?: 0.0, lastKnownLocation?.longitude ?: 0.0)
             location.location = targetlocation
-            measuringLocationViewModel.insert(location)
+            measuringLocationViewModel.update(location)
             toast("Location saved!")
         }
 

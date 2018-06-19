@@ -28,6 +28,10 @@ internal constructor(application: Application) {
         insertAsyncTask(measuringLocationDao!!).execute(item)
     }
 
+    fun update(item: MeasuringLocation) {
+        updateAsyncTask(measuringLocationDao!!).execute(item)
+    }
+
     fun delete(item: MeasuringLocation) {
         measuringLocationDao?.deleteLocation(item)
     }
@@ -40,6 +44,13 @@ internal constructor(application: Application) {
 
         override fun doInBackground(vararg params: MeasuringLocation): Void? {
             asyncTaskDao.insertLocation(params[0])
+            return null
+        }
+    }
+    private class updateAsyncTask internal constructor(private val asyncTaskDao: MeasuringLocationDao) : AsyncTask<MeasuringLocation, Void, Void>() {
+
+        override fun doInBackground(vararg params: MeasuringLocation): Void? {
+            asyncTaskDao.updateLocation(params[0])
             return null
         }
     }

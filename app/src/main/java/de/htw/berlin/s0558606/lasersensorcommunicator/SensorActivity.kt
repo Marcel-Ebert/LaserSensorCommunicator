@@ -12,6 +12,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.WindowManager
 import android.widget.Toast
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.MeasurementViewModel
 import de.htw.berlin.s0558606.lasersensorcommunicator.model.SensorData
@@ -29,12 +30,8 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
     private val usbReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             when (intent.action) {
-//                UsbService.ACTION_USB_PERMISSION_GRANTED
-//                -> toast("USB Ready")
                 UsbService.ACTION_USB_PERMISSION_NOT_GRANTED
                 -> toast("USB Permission not granted")
-//                UsbService.ACTION_NO_USB
-//                -> toast("No USB connected")
                 UsbService.ACTION_USB_DISCONNECTED
                 -> toast("USB disconnected")
                 UsbService.ACTION_USB_NOT_SUPPORTED
@@ -82,6 +79,8 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             serviceRunning = true
             btn_stop.visibility = View.VISIBLE
             btn_start.visibility = View.INVISIBLE
+
+            setWakelock(true)
         }
         btn_stop.onClick {
             unregisterReceiver(usbReceiver)
@@ -91,6 +90,8 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
 
             btn_start.visibility = View.VISIBLE
             btn_stop.visibility = View.INVISIBLE
+
+            setWakelock(false)
 
         }
 
@@ -105,12 +106,10 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
         }
 
         et_interval.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
 
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
 
             override fun afterTextChanged(s: Editable) {
@@ -219,6 +218,14 @@ class SensorActivity : AppCompatActivity(), AnkoLogger {
             val bindingIntent = Intent(this, service)
             bindService(bindingIntent, serviceConnection, Context.BIND_AUTO_CREATE)
         }
+    }
+
+    private fun setWakelock(wakelock: Boolean) {
+        if (wakelock)
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        else
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
     }
 
     private fun setFilters() {
